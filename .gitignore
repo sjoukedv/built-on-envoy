@@ -6,6 +6,9 @@ npm-debug.log*
 dist/
 .output/
 
+## AI
+.claude/
+
 # Environment files
 .env
 .env.*
@@ -27,3 +30,5 @@ Thumbs.db
 
 # Local development
 *.local
+
+*.pdf

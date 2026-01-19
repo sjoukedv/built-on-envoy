@@ -7,7 +7,7 @@ A community-driven marketplace for Envoy Proxy extensions. Discover, run, and bu
 **Envoy Ecosystem** is designed to make extending Envoy Proxy as simple as possible. It consists of:
 
 1. **Marketplace Repository**: A GitHub repository where each folder contains an extension
-2. **CLI Tool (`ec`)**: A command-line tool for discovering, running, and building extensions
+2. **CLI Tool (`ee`)**: A command-line tool for discovering, running, and building extensions
 3. **Website**: A developer-focused website for browsing extensions and getting started
 
 ## Repository Structure
@@ -39,34 +39,34 @@ envoy-ecosystem/
 curl -sL https://envoy-ecosystem.io/install.sh | sh
 
 # Run an extension
-ec run --plugin rate-limiter --plugin auth-jwt
+ee run --plugin rate-limiter --plugin auth-jwt
 ```
 
 ### Create Your Own Extension
 
 ```bash
 # Scaffold a new extension
-ec create-plugin my-filter
+ee create-plugin my-filter
 
 # Test it locally
-ec run --plugin ./my-filter
+ee run --plugin ./my-filter
 ```
 
 ### Publish an Extension
 
 ```bash
 # Publish to the ecosystem
-ec plugin publish ./my-filter
+ee plugin publish ./my-filter
 ```
 
 ## CLI Commands
 
-- `ec plugin list` - Browse available extensions
-- `ec run --plugin <name>` - Start Envoy with extensions
-- `ec run --plugin ./path` - Test local extensions
-- `ec gen --plugin <name>` - Generate Envoy configuration
-- `ec create-plugin <name>` - Scaffold new extension
-- `ec plugin publish <path>` - Publish to marketplace
+- `ee plugin list` - Browse available extensions
+- `ee run --plugin <name>` - Start Envoy with extensions
+- `ee run --plugin ./path` - Test local extensions
+- `ee gen --plugin <name>` - Generate Envoy configuration
+- `ee create-plugin <name>` - Scaffold new extension
+- `ee plugin publish <path>` - Publish to marketplace
 
 ## Website Development
 
@@ -97,7 +97,7 @@ We welcome contributions! To publish an extension:
 3. Include a `README.md` and manifest file
 4. Open a pull request
 
-Or use the CLI: `ec plugin publish ./your-extension`
+Or use the CLI: `ee plugin publish ./your-extension`
 
 ## Tech Stack
 

@@ -1,4 +1,4 @@
-# Envoy Ecosystem CLI (`ec`)
+# Envoy Ecosystem CLI (`ee`)
 
 Command-line tool for working with Envoy Ecosystem extensions.
 
@@ -12,20 +12,20 @@ Command-line tool for working with Envoy Ecosystem extensions.
 
 ```bash
 # Discovery
-ec plugin list                    # List all available extensions
+ee plugin list                    # List all available extensions
 
 # Running Extensions
-ec run --plugin <name>           # Run Envoy with extensions
-ec run --plugin ./path           # Run with local extension
-ec run --config envoy.yaml       # Run with custom config
+ee run --plugin <name>           # Run Envoy with extensions
+ee run --plugin ./path           # Run with local extension
+ee run --config envoy.yaml       # Run with custom config
 
 # Development
-ec create-plugin <name>          # Scaffold new extension
-ec plugin publish <path>         # Publish extension to marketplace
+ee create-plugin <name>          # Scaffold new extension
+ee plugin publish <path>         # Publish extension to marketplace
 
 # Configuration Generation
-ec gen --plugin <name>           # Generate Envoy config
-ec gen --plugin <name> --full    # Generate full config
+ee gen --plugin <name>           # Generate Envoy config
+ee gen --plugin <name> --full    # Generate full config
 ```
 
 ### Implementation Details
@@ -64,8 +64,6 @@ cli/
 ```
 
 ## Contributing
-
-The CLI design is based on the [Envoy Composer UX document](../Envoy%20Composer%20UX.pdf).
 
 If you're interested in contributing to the CLI implementation, please open an issue or discussion.
 

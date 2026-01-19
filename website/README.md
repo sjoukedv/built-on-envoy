@@ -67,12 +67,17 @@ netlify deploy --prod --dir=dist
 
 ```
 /
-├── public/          # Static assets (favicon, images, etc.)
+├── public/                  # Static assets
+│   ├── envoy-icon.png      # Official Envoy logo (200x200px)
+│   ├── envoy-logo.svg      # Full Envoy wordmark (reference)
+│   └── favicon.png         # Browser tab icon
 ├── src/
-│   └── pages/       # Page components
-│       └── index.astro  # Homepage
-├── astro.config.mjs # Astro configuration
-├── netlify.toml     # Netlify deployment configuration
+│   └── pages/               # Page components
+│       └── index.astro      # Homepage
+├── astro.config.mjs         # Astro configuration
+├── netlify.toml             # Netlify deployment configuration
+├── COLOR_SCHEME.md          # Color palette documentation
+├── LOGO_USAGE.md            # Logo implementation guide
 └── package.json
 ```
 

@@ -5,7 +5,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Envoy Ecosystem - Extensions Marketplace for Envoy Proxy</title>
@@ -15,8 +15,11 @@
 		<header>
 			<div class="container">
 				<div class="header-content">
-					<h1 class="logo">Envoy Ecosystem</h1>
-					<p class="subtitle">by Tetrate</p>
+					<img src="/envoy-icon.png" alt="Envoy Logo" class="logo-icon" />
+					<div class="logo-text">
+						<h1 class="logo">Envoy Ecosystem</h1>
+						<p class="subtitle">by Tetrate</p>
+					</div>
 				</div>
 				<nav>
 					<a href="https://github.com/tetrate/envoy-ecosystem" target="_blank">GitHub</a>
@@ -29,6 +32,9 @@
 		<main>
 			<section class="hero">
 				<div class="container">
+					<div class="hero-logo">
+						<img src="/envoy-icon.png" alt="Envoy Logo" />
+					</div>
 					<h2>Extend Envoy Proxy in seconds</h2>
 					<p class="hero-subtitle">
 						A community-driven marketplace for Envoy extensions. Discover, run, and build custom filters with zero friction.
@@ -47,7 +53,7 @@
 
 						<p class="install-note">Then run your first extension:</p>
 						<div class="code-block">
-							<code>ec run --plugin rate-limiter --plugin auth-jwt</code>
+							<code>ee run --plugin rate-limiter --plugin auth-jwt</code>
 							<button class="copy-btn" aria-label="Copy command">
 								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M5.5 2.5h-3v11h7v-3m-4-8h7v7h-7v-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -66,7 +72,7 @@
 							<h3>Run Extensions</h3>
 							<p>Start Envoy with community extensions in a single command. Auto-configured with test upstreams and example requests.</p>
 							<div class="code-example">
-								<code>ec run --plugin cors</code>
+								<code>ee run --plugin cors</code>
 							</div>
 							<div class="code-output">
 								<span class="output-success">✓</span> Starting Envoy 1.37.0...<br/>
@@ -80,12 +86,12 @@
 							<h3>Build Extensions</h3>
 							<p>Scaffold a new extension with ready-to-use templates. Iterate locally and test immediately.</p>
 							<div class="code-example">
-								<code>ec create-plugin my-filter</code>
+								<code>ee create-plugin my-filter</code>
 							</div>
 							<div class="code-output">
 								<span class="output-success">✓</span> Scaffolding plugin...<br/>
 								<span class="output-info">→</span> Created my-filter/<br/>
-								<span class="output-muted">Next:</span> ec run --plugin ./my-filter
+								<span class="output-muted">Next:</span> ee run --plugin ./my-filter
 							</div>
 						</div>
 
@@ -94,7 +100,7 @@
 							<h3>Share Extensions</h3>
 							<p>Publish your extension to the ecosystem with a single command. Open a PR to the community repository.</p>
 							<div class="code-example">
-								<code>ec plugin publish ./my-filter</code>
+								<code>ee plugin publish ./my-filter</code>
 							</div>
 							<div class="code-output">
 								<span class="output-success">✓</span> Extension validated<br/>
@@ -119,7 +125,7 @@
 							</div>
 							<p>Token bucket rate limiting with Redis backend support</p>
 							<div class="extension-footer">
-								<code>ec run --plugin rate-limiter</code>
+								<code>ee run --plugin rate-limiter</code>
 							</div>
 						</div>
 
@@ -130,7 +136,7 @@
 							</div>
 							<p>JWT authentication and validation with JWKS endpoint support</p>
 							<div class="extension-footer">
-								<code>ec run --plugin auth-jwt</code>
+								<code>ee run --plugin auth-jwt</code>
 							</div>
 						</div>
 
@@ -141,7 +147,7 @@
 							</div>
 							<p>Configurable CORS policy with wildcard and regex support</p>
 							<div class="extension-footer">
-								<code>ec run --plugin cors</code>
+								<code>ee run --plugin cors</code>
 							</div>
 						</div>
 
@@ -152,7 +158,7 @@
 							</div>
 							<p>Advanced request/response logging with custom formatters</p>
 							<div class="extension-footer">
-								<code>ec run --plugin request-logger</code>
+								<code>ee run --plugin request-logger</code>
 							</div>
 						</div>
 
@@ -163,7 +169,7 @@
 							</div>
 							<p>Add, modify, or remove headers with templating support</p>
 							<div class="extension-footer">
-								<code>ec run --plugin transform-headers</code>
+								<code>ee run --plugin transform-headers</code>
 							</div>
 						</div>
 
@@ -174,7 +180,7 @@
 							</div>
 							<p>HTTP caching with TTL control and cache key customization</p>
 							<div class="extension-footer">
-								<code>ec run --plugin cache</code>
+								<code>ee run --plugin cache</code>
 							</div>
 						</div>
 					</div>
@@ -194,37 +200,37 @@
 					<div class="cli-grid">
 						<div class="cli-item">
 							<h4>Discover</h4>
-							<code>ec plugin list</code>
+							<code>ee plugin list</code>
 							<p>Browse available extensions</p>
 						</div>
 
 						<div class="cli-item">
 							<h4>Run</h4>
-							<code>ec run --plugin name</code>
+							<code>ee run --plugin name</code>
 							<p>Start Envoy with extensions</p>
 						</div>
 
 						<div class="cli-item">
 							<h4>Test Locally</h4>
-							<code>ec run --plugin ./path</code>
+							<code>ee run --plugin ./path</code>
 							<p>Iterate on local extensions</p>
 						</div>
 
 						<div class="cli-item">
 							<h4>Generate Config</h4>
-							<code>ec gen --plugin name</code>
+							<code>ee gen --plugin name</code>
 							<p>Export Envoy configuration</p>
 						</div>
 
 						<div class="cli-item">
 							<h4>Scaffold</h4>
-							<code>ec create-plugin name</code>
+							<code>ee create-plugin name</code>
 							<p>Create new extension template</p>
 						</div>
 
 						<div class="cli-item">
 							<h4>Publish</h4>
-							<code>ec plugin publish ./path</code>
+							<code>ee plugin publish ./path</code>
 							<p>Share with the community</p>
 						</div>
 					</div>
@@ -277,9 +283,9 @@
 
 			:root {
 				/* Primary palette - Envoy-inspired purple/indigo */
-				--primary: #7c3aed;
-				--primary-dark: #5b21b6;
-				--primary-light: #a78bfa;
+				--primary: #5b21b6;
+				--primary-dark: #4c1d95;
+				--primary-light: #7c3aed;
 				--primary-ultra-light: #e9d5ff;
 
 				/* Accent - Teal/cyan for CTAs and highlights */
@@ -329,7 +335,7 @@
 			header {
 				background: var(--bg);
 				border-bottom: 1px solid var(--border);
-				padding: 24px 0;
+				padding: 16px 0;
 				position: sticky;
 				top: 0;
 				z-index: 100;
@@ -345,19 +351,34 @@
 
 			.header-content {
 				display: flex;
-				align-items: baseline;
-				gap: 12px;
+				align-items: center;
+				gap: 16px;
+			}
+
+			.logo-icon {
+				height: 64px;
+				width: auto;
+				object-fit: contain;
+			}
+
+			.logo-text {
+				display: flex;
+				flex-direction: column;
+				gap: 2px;
 			}
 
 			.logo {
 				font-size: 24px;
 				font-weight: 700;
 				color: var(--primary);
+				line-height: 1;
+				margin: 0;
 			}
 
 			.subtitle {
 				color: var(--text-muted);
-				font-size: 14px;
+				font-size: 13px;
+				line-height: 1;
 			}
 
 			nav {
@@ -399,6 +420,31 @@
 			.hero .container {
 				position: relative;
 				z-index: 1;
+			}
+
+			.hero-logo {
+				display: flex;
+				justify-content: center;
+				margin-bottom: 32px;
+				animation: fadeInDown 0.8s ease-out;
+			}
+
+			.hero-logo img {
+				height: 120px;
+				width: auto;
+				object-fit: contain;
+				filter: drop-shadow(0 4px 12px rgba(124, 58, 237, 0.2));
+			}
+
+			@keyframes fadeInDown {
+				from {
+					opacity: 0;
+					transform: translateY(-20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
 			}
 
 			.hero h2 {
@@ -810,6 +856,22 @@
 
 			/* Responsive */
 			@media (max-width: 768px) {
+				.logo-icon {
+					height: 44px;
+				}
+
+				.logo {
+					font-size: 20px;
+				}
+
+				.subtitle {
+					font-size: 12px;
+				}
+
+				.hero-logo img {
+					height: 80px;
+				}
+
 				.hero h2 {
 					font-size: 40px;
 				}
@@ -826,6 +888,7 @@
 
 				nav {
 					gap: 16px;
+					font-size: 14px;
 				}
 
 				.cta-buttons {

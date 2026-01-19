@@ -10,7 +10,7 @@ Each extension should be in its own directory with:
 extension-name/
 ├── README.md           # Description and usage
 ├── manifest.yaml       # Metadata (name, version, author, etc.)
-├── plugin.wasm         # Compiled WebAssembly plugin
+├── main.go             # Extension code
 ├── config.yaml         # Example Envoy configuration
 └── examples/           # Example usage and test cases
 ```
@@ -27,7 +27,7 @@ extension-name/
    - Examples
 5. Open a pull request
 
-Or use the CLI: `ec plugin publish ./your-extension`
+Or use the CLI: `ee plugin publish ./your-extension`
 
 ## Extension Guidelines
 
