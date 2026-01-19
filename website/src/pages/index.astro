@@ -1,5 +1,12 @@
 ---
 import '../styles/main.css';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Features from '../components/Features.astro';
+import Extensions from '../components/Extensions.astro';
+import CLIFeatures from '../components/CLIFeatures.astro';
+import CTA from '../components/CTA.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <!DOCTYPE html>
@@ -13,268 +20,17 @@ import '../styles/main.css';
 		<meta name="description" content="Discover, run, and build extensions for Envoy Proxy. A community-driven marketplace with zero-friction developer experience, powered by Tetrate" />
 	</head>
 	<body>
-		<header>
-			<div class="container">
-				<div class="header-content">
-					<img src="/envoy-icon.png" alt="Envoy Logo" class="logo-icon" />
-					<div class="logo-text">
-						<h1 class="logo">Envoy Ecosystem</h1>
-						<p class="subtitle">by Tetrate</p>
-					</div>
-				</div>
-				<nav>
-					<a href="https://github.com/tetratelabs/envoy-ecosystem" target="_blank">GitHub</a>
-					<a href="#extensions">Extensions</a>
-					<a href="#docs">Docs</a>
-				</nav>
-			</div>
-		</header>
+		<Header />
 
 		<main>
-			<section class="hero">
-				<div class="container">
-					<div class="hero-logo">
-						<img src="/envoy-icon.png" alt="Envoy Logo" />
-					</div>
-					<h2>Innovate on AI and API with Envoy</h2>
-					<p class="hero-subtitle">
-						A community-driven marketplace for Envoy extensions, <strong>powered by <img src="/tetrate-logo-black.png" alt="Tetrate" class="tetrate-logo-inline" /></strong><br/>
-						Discover, run, and build custom filters with zero friction.
-					</p>
-
-					<div class="install-section">
-						<h3>Get Started</h3>
-						<div class="code-block">
-							<code>curl -sL https://envoy-ecosystem.io/install.sh | sh</code>
-							<button class="copy-btn" aria-label="Copy command">
-								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path d="M5.5 2.5h-3v11h7v-3m-4-8h7v7h-7v-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-								</svg>
-							</button>
-						</div>
-
-						<p class="install-note">Then run your first extension:</p>
-						<div class="code-block">
-							<code>ee run --plugin rate-limiter --plugin auth-jwt</code>
-							<button class="copy-btn" aria-label="Copy command">
-								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path d="M5.5 2.5h-3v11h7v-3m-4-8h7v7h-7v-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-								</svg>
-							</button>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="features">
-				<div class="container">
-					<div class="feature-grid">
-						<div class="feature-card">
-							<div class="feature-icon">▶</div>
-							<h3>Run Extensions</h3>
-							<p>Start Envoy with community extensions in a single command. Auto-configured with test upstreams and example requests.</p>
-							<div class="code-example">
-								<code>ee run --plugin cors</code>
-							</div>
-							<div class="code-output">
-								<span class="output-success">✓</span> Starting Envoy 1.37.0...<br/>
-								<span class="output-info">→</span> <span class="output-link">http://localhost:10000</span><br/>
-								<span class="output-muted">Test with:</span> curl http://localhost:10000/
-							</div>
-						</div>
-
-						<div class="feature-card">
-							<div class="feature-icon">⚡</div>
-							<h3>Build Extensions</h3>
-							<p>Scaffold a new extension with ready-to-use templates. Iterate locally and test immediately.</p>
-							<div class="code-example">
-								<code>ee create-plugin my-filter</code>
-							</div>
-							<div class="code-output">
-								<span class="output-success">✓</span> Scaffolding plugin...<br/>
-								<span class="output-info">→</span> Created my-filter/<br/>
-								<span class="output-muted">Next:</span> ee run --plugin ./my-filter
-							</div>
-						</div>
-
-						<div class="feature-card">
-							<div class="feature-icon">↗</div>
-							<h3>Share Extensions</h3>
-							<p>Publish your extension to the ecosystem with a single command. Open a PR to the community repository.</p>
-							<div class="code-example">
-								<code>ee plugin publish ./my-filter</code>
-							</div>
-							<div class="code-output">
-								<span class="output-success">✓</span> Extension validated<br/>
-								<span class="output-info">→</span> Opening pull request...<br/>
-								<span class="output-link">github.com/tetratelabs/envoy-ecosystem/pulls/42</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="extensions" id="extensions">
-				<div class="container">
-					<h2>Featured Extensions</h2>
-					<p class="section-subtitle">Community-maintained extensions ready to use</p>
-
-					<div class="extensions-grid">
-						<div class="extension-card">
-							<div class="extension-header">
-								<h3>rate-limiter</h3>
-								<span class="extension-badge">Popular</span>
-							</div>
-							<p>Token bucket rate limiting with Redis backend support</p>
-							<div class="extension-footer">
-								<code>ee run --plugin rate-limiter</code>
-							</div>
-						</div>
-
-						<div class="extension-card">
-							<div class="extension-header">
-								<h3>auth-jwt</h3>
-								<span class="extension-badge">Security</span>
-							</div>
-							<p>JWT authentication and validation with JWKS endpoint support</p>
-							<div class="extension-footer">
-								<code>ee run --plugin auth-jwt</code>
-							</div>
-						</div>
-
-						<div class="extension-card">
-							<div class="extension-header">
-								<h3>cors</h3>
-								<span class="extension-badge">Network</span>
-							</div>
-							<p>Configurable CORS policy with wildcard and regex support</p>
-							<div class="extension-footer">
-								<code>ee run --plugin cors</code>
-							</div>
-						</div>
-
-						<div class="extension-card">
-							<div class="extension-header">
-								<h3>request-logger</h3>
-								<span class="extension-badge">Observability</span>
-							</div>
-							<p>Advanced request/response logging with custom formatters</p>
-							<div class="extension-footer">
-								<code>ee run --plugin request-logger</code>
-							</div>
-						</div>
-
-						<div class="extension-card">
-							<div class="extension-header">
-								<h3>transform-headers</h3>
-								<span class="extension-badge">Transform</span>
-							</div>
-							<p>Add, modify, or remove headers with templating support</p>
-							<div class="extension-footer">
-								<code>ee run --plugin transform-headers</code>
-							</div>
-						</div>
-
-						<div class="extension-card">
-							<div class="extension-header">
-								<h3>cache</h3>
-								<span class="extension-badge">Performance</span>
-							</div>
-							<p>HTTP caching with TTL control and cache key customization</p>
-							<div class="extension-footer">
-								<code>ee run --plugin cache</code>
-							</div>
-						</div>
-					</div>
-
-					<div class="browse-all">
-						<a href="https://github.com/tetratelabs/envoy-ecosystem" class="btn-secondary">
-							Browse All Extensions →
-						</a>
-					</div>
-				</div>
-			</section>
-
-			<section class="cli-features" id="docs">
-				<div class="container">
-					<h2>Complete CLI Toolkit</h2>
-
-					<div class="cli-grid">
-						<div class="cli-item">
-							<h4>Discover</h4>
-							<code>ee plugin list</code>
-							<p>Browse available extensions</p>
-						</div>
-
-						<div class="cli-item">
-							<h4>Run</h4>
-							<code>ee run --plugin name</code>
-							<p>Start Envoy with extensions</p>
-						</div>
-
-						<div class="cli-item">
-							<h4>Test Locally</h4>
-							<code>ee run --plugin ./path</code>
-							<p>Iterate on local extensions</p>
-						</div>
-
-						<div class="cli-item">
-							<h4>Generate Config</h4>
-							<code>ee gen --plugin name</code>
-							<p>Export Envoy configuration</p>
-						</div>
-
-						<div class="cli-item">
-							<h4>Scaffold</h4>
-							<code>ee create-plugin name</code>
-							<p>Create new extension template</p>
-						</div>
-
-						<div class="cli-item">
-							<h4>Publish</h4>
-							<code>ee plugin publish ./path</code>
-							<p>Share with the community</p>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="cta">
-				<div class="container">
-					<h2>Ready to extend Envoy?</h2>
-					<div class="cta-buttons">
-						<a href="https://github.com/tetratelabs/envoy-ecosystem" class="btn-primary">View on GitHub</a>
-						<a href="#" class="btn-secondary">Read the Docs</a>
-					</div>
-				</div>
-			</section>
+			<Hero />
+			<Features />
+			<Extensions />
+			<CLIFeatures />
+			<CTA />
 		</main>
 
-		<footer>
-			<div class="container">
-				<div class="footer-content">
-					<div class="footer-section">
-						<h4>Envoy Ecosystem</h4>
-						<p class="footer-built-by">Built by <img src="/tetrate-logo-white.png" alt="Tetrate" class="tetrate-logo" /></p>
-					</div>
-					<div class="footer-section">
-						<h4>Resources</h4>
-						<a href="https://github.com/tetratelabs/envoy-ecosystem">GitHub</a>
-						<a href="#">Documentation</a>
-						<a href="#">Contributing</a>
-					</div>
-					<div class="footer-section">
-						<h4>Community</h4>
-						<a href="https://www.envoyproxy.io/">Envoy Proxy</a>
-						<a href="https://www.tetrate.io/">Tetrate</a>
-						<a href="#">Slack</a>
-					</div>
-				</div>
-				<div class="footer-bottom">
-					<p>&copy; 2026 Tetrate. Envoy® is a registered trademark of the Linux Foundation.</p>
-				</div>
-			</div>
-		</footer>
+		<Footer />
 
 		<script>
 			// Copy button functionality

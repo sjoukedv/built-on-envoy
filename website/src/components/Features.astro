@@ -1,0 +1,47 @@
+<section class="features">
+	<div class="container">
+		<div class="feature-grid">
+			<div class="feature-card">
+				<div class="feature-icon">▶</div>
+				<h3>Run Extensions</h3>
+				<p>Start Envoy with community extensions in a single command. Auto-configured with test upstreams and example requests.</p>
+				<div class="code-example">
+					<code>ee run --plugin cors</code>
+				</div>
+				<div class="code-output">
+					<span class="output-success">✓</span> Starting Envoy 1.37.0...<br/>
+					<span class="output-info">→</span> <span class="output-link">http://localhost:10000</span><br/>
+					<span class="output-muted">Test with:</span> curl http://localhost:10000/
+				</div>
+			</div>
+
+			<div class="feature-card">
+				<div class="feature-icon">⚡</div>
+				<h3>Build Extensions</h3>
+				<p>Scaffold a new extension with ready-to-use templates. Iterate locally and test immediately.</p>
+				<div class="code-example">
+					<code>ee create-plugin my-filter</code>
+				</div>
+				<div class="code-output">
+					<span class="output-success">✓</span> Scaffolding plugin...<br/>
+					<span class="output-info">→</span> Created my-filter/<br/>
+					<span class="output-muted">Next:</span> ee run --plugin ./my-filter
+				</div>
+			</div>
+
+			<div class="feature-card">
+				<div class="feature-icon">↗</div>
+				<h3>Share Extensions</h3>
+				<p>Publish your extension to the ecosystem with a single command. Open a PR to the community repository.</p>
+				<div class="code-example">
+					<code>ee plugin publish ./my-filter</code>
+				</div>
+				<div class="code-output">
+					<span class="output-success">✓</span> Extension validated<br/>
+					<span class="output-info">→</span> Opening pull request...<br/>
+					<span class="output-link">github.com/tetratelabs/envoy-ecosystem/pulls/42</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
