@@ -9,7 +9,7 @@
 	--primary: #5b21b6;
 	--primary-dark: #4c1d95;
 	--primary-light: #7c3aed;
-	--primary-pink: rgb(192, 108, 201);
+	--primary-pink: #c06cc9;
 	--primary-ultra-light: #e9d5ff;
 
 	/* Accent - Teal/cyan for CTAs and highlights */
@@ -598,6 +598,7 @@ footer {
 	width: auto;
 	object-fit: contain;
 	vertical-align: middle;
+	transform: translateY(-2px);
 }
 
 .footer-section a {
