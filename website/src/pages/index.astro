@@ -9,7 +9,7 @@
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Envoy Ecosystem - Extensions Marketplace for Envoy Proxy</title>
-		<meta name="description" content="Discover, run, and build extensions for Envoy Proxy. A community-driven marketplace with zero-friction developer experience." />
+		<meta name="description" content="Discover, run, and build extensions for Envoy Proxy. A community-driven marketplace with zero-friction developer experience, powered by Tetrate" />
 	</head>
 	<body>
 		<header>
@@ -35,9 +35,10 @@
 					<div class="hero-logo">
 						<img src="/envoy-icon.png" alt="Envoy Logo" />
 					</div>
-					<h2>Extend Envoy Proxy in seconds</h2>
+					<h2>Innovate on AI and API with Envoy</h2>
 					<p class="hero-subtitle">
-						A community-driven marketplace for Envoy extensions. Discover, run, and build custom filters with zero friction.
+						A community-driven marketplace for Envoy extensions, <strong>powered by <img src="/tetrate-logo-black.png" alt="Tetrate" class="tetrate-logo-inline" /></strong><br/>
+						Discover, run, and build custom filters with zero friction.
 					</p>
 
 					<div class="install-section">
@@ -253,7 +254,7 @@
 				<div class="footer-content">
 					<div class="footer-section">
 						<h4>Envoy Ecosystem</h4>
-						<p>Built by Tetrate</p>
+						<p class="footer-built-by">Built by <img src="/tetrate-logo-white.png" alt="Tetrate" class="tetrate-logo" /></p>
 					</div>
 					<div class="footer-section">
 						<h4>Resources</h4>
@@ -377,7 +378,7 @@
 
 			.subtitle {
 				color: var(--text-muted);
-				font-size: 13px;
+				font-size: 15px;
 				line-height: 1;
 			}
 
@@ -451,15 +452,31 @@
 				font-size: 56px;
 				font-weight: 800;
 				margin-bottom: 24px;
-				color: var(--text);
+				color: var(--primary-dark);
 				line-height: 1.2;
 			}
 
 			.hero-subtitle {
 				font-size: 20px;
 				color: var(--text-muted);
-				max-width: 700px;
+				max-width: 900px;
 				margin: 0 auto 60px;
+			}
+
+			.hero-subtitle strong {
+				color: var(--primary-dark);
+				display: inline-flex;
+				align-items: center;
+				gap: 0;
+			}
+
+			.tetrate-logo-inline {
+				height: 28px;
+				width: auto;
+				object-fit: contain;
+				vertical-align: middle;
+				margin-left: -5px;
+				transform: translateY(-2px);
 			}
 
 			.install-section {
@@ -471,7 +488,7 @@
 				font-size: 18px;
 				font-weight: 600;
 				margin-bottom: 16px;
-				color: var(--text);
+				color: var(--primary-dark);
 				text-align: left;
 			}
 
@@ -569,7 +586,7 @@
 			.feature-card h3 {
 				font-size: 24px;
 				margin-bottom: 12px;
-				color: var(--text);
+				color: var(--primary-dark);
 			}
 
 			.feature-card > p {
@@ -622,6 +639,7 @@
 				font-size: 40px;
 				text-align: center;
 				margin-bottom: 12px;
+				color: var(--primary-dark);
 			}
 
 			.section-subtitle {
@@ -660,7 +678,7 @@
 
 			.extension-card h3 {
 				font-size: 18px;
-				color: var(--text);
+				color: var(--primary-dark);
 				font-family: 'Monaco', 'Menlo', monospace;
 			}
 
@@ -704,6 +722,7 @@
 				font-size: 40px;
 				text-align: center;
 				margin-bottom: 48px;
+				color: var(--primary-dark);
 			}
 
 			.cli-grid {
@@ -764,6 +783,7 @@
 			.cta h2 {
 				font-size: 40px;
 				margin-bottom: 32px;
+				color: var(--primary-dark);
 			}
 
 			.cta-buttons {
@@ -828,6 +848,19 @@
 			.footer-section p {
 				color: #999;
 				font-size: 14px;
+			}
+
+			.footer-built-by {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			.tetrate-logo {
+				height: 20px;
+				width: auto;
+				object-fit: contain;
+				vertical-align: middle;
 			}
 
 			.footer-section a {
