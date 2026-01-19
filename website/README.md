@@ -95,12 +95,20 @@ The website is a single-page application with all content in `src/pages/index.as
 
 ## Color Scheme
 
-The site uses Envoy-inspired colors:
+The site uses an Envoy-inspired color palette with distinct values to establish its own identity:
 
-- Primary: `#6500E0` (Envoy purple)
-- Accent: `#00D9C9` (Teal)
-- Success: `#00C853` (Green)
-- Info: `#2196F3` (Blue)
+- Primary: `#7c3aed` (Purple/Indigo) - Main brand color
+- Accent: `#06b6d4` (Teal/Cyan) - Complementary accent
+- Success: `#10b981` (Green) - Success states
+- Info: `#3b82f6` (Blue) - Information states
+
+The color scheme features:
+- Subtle gradients throughout for depth
+- Light backgrounds with purple/teal tints
+- Dark code blocks for contrast
+- Radial gradient overlays in hero sections
+
+For complete color documentation, see [COLOR_SCHEME.md](./COLOR_SCHEME.md)
 
 ## License
 
