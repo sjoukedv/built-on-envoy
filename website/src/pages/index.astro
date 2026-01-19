@@ -1,0 +1,767 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Envoy Ecosystem - Extensions Marketplace for Envoy Proxy</title>
+		<meta name="description" content="Discover, run, and build extensions for Envoy Proxy. A community-driven marketplace with zero-friction developer experience." />
+	</head>
+	<body>
+		<header>
+			<div class="container">
+				<div class="header-content">
+					<h1 class="logo">Envoy Ecosystem</h1>
+					<p class="subtitle">by Tetrate</p>
+				</div>
+				<nav>
+					<a href="https://github.com/tetrate/envoy-ecosystem" target="_blank">GitHub</a>
+					<a href="#extensions">Extensions</a>
+					<a href="#docs">Docs</a>
+				</nav>
+			</div>
+		</header>
+
+		<main>
+			<section class="hero">
+				<div class="container">
+					<h2>Extend Envoy Proxy in seconds</h2>
+					<p class="hero-subtitle">
+						A community-driven marketplace for Envoy extensions. Discover, run, and build custom filters with zero friction.
+					</p>
+
+					<div class="install-section">
+						<h3>Get Started</h3>
+						<div class="code-block">
+							<code>curl -sL https://envoy-ecosystem.io/install.sh | sh</code>
+							<button class="copy-btn" aria-label="Copy command">
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5.5 2.5h-3v11h7v-3m-4-8h7v7h-7v-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</button>
+						</div>
+
+						<p class="install-note">Then run your first extension:</p>
+						<div class="code-block">
+							<code>ec run --plugin rate-limiter --plugin auth-jwt</code>
+							<button class="copy-btn" aria-label="Copy command">
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M5.5 2.5h-3v11h7v-3m-4-8h7v7h-7v-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="features">
+				<div class="container">
+					<div class="feature-grid">
+						<div class="feature-card">
+							<div class="feature-icon">▶</div>
+							<h3>Run Extensions</h3>
+							<p>Start Envoy with community extensions in a single command. Auto-configured with test upstreams and example requests.</p>
+							<div class="code-example">
+								<code>ec run --plugin cors</code>
+							</div>
+							<div class="code-output">
+								<span class="output-success">✓</span> Starting Envoy 1.37.0...<br/>
+								<span class="output-info">→</span> <span class="output-link">http://localhost:10000</span><br/>
+								<span class="output-muted">Test with:</span> curl http://localhost:10000/
+							</div>
+						</div>
+
+						<div class="feature-card">
+							<div class="feature-icon">⚡</div>
+							<h3>Build Extensions</h3>
+							<p>Scaffold a new extension with ready-to-use templates. Iterate locally and test immediately.</p>
+							<div class="code-example">
+								<code>ec create-plugin my-filter</code>
+							</div>
+							<div class="code-output">
+								<span class="output-success">✓</span> Scaffolding plugin...<br/>
+								<span class="output-info">→</span> Created my-filter/<br/>
+								<span class="output-muted">Next:</span> ec run --plugin ./my-filter
+							</div>
+						</div>
+
+						<div class="feature-card">
+							<div class="feature-icon">↗</div>
+							<h3>Share Extensions</h3>
+							<p>Publish your extension to the ecosystem with a single command. Open a PR to the community repository.</p>
+							<div class="code-example">
+								<code>ec plugin publish ./my-filter</code>
+							</div>
+							<div class="code-output">
+								<span class="output-success">✓</span> Extension validated<br/>
+								<span class="output-info">→</span> Opening pull request...<br/>
+								<span class="output-link">github.com/tetrate/envoy-ecosystem/pulls/42</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="extensions" id="extensions">
+				<div class="container">
+					<h2>Featured Extensions</h2>
+					<p class="section-subtitle">Community-maintained extensions ready to use</p>
+
+					<div class="extensions-grid">
+						<div class="extension-card">
+							<div class="extension-header">
+								<h3>rate-limiter</h3>
+								<span class="extension-badge">Popular</span>
+							</div>
+							<p>Token bucket rate limiting with Redis backend support</p>
+							<div class="extension-footer">
+								<code>ec run --plugin rate-limiter</code>
+							</div>
+						</div>
+
+						<div class="extension-card">
+							<div class="extension-header">
+								<h3>auth-jwt</h3>
+								<span class="extension-badge">Security</span>
+							</div>
+							<p>JWT authentication and validation with JWKS endpoint support</p>
+							<div class="extension-footer">
+								<code>ec run --plugin auth-jwt</code>
+							</div>
+						</div>
+
+						<div class="extension-card">
+							<div class="extension-header">
+								<h3>cors</h3>
+								<span class="extension-badge">Network</span>
+							</div>
+							<p>Configurable CORS policy with wildcard and regex support</p>
+							<div class="extension-footer">
+								<code>ec run --plugin cors</code>
+							</div>
+						</div>
+
+						<div class="extension-card">
+							<div class="extension-header">
+								<h3>request-logger</h3>
+								<span class="extension-badge">Observability</span>
+							</div>
+							<p>Advanced request/response logging with custom formatters</p>
+							<div class="extension-footer">
+								<code>ec run --plugin request-logger</code>
+							</div>
+						</div>
+
+						<div class="extension-card">
+							<div class="extension-header">
+								<h3>transform-headers</h3>
+								<span class="extension-badge">Transform</span>
+							</div>
+							<p>Add, modify, or remove headers with templating support</p>
+							<div class="extension-footer">
+								<code>ec run --plugin transform-headers</code>
+							</div>
+						</div>
+
+						<div class="extension-card">
+							<div class="extension-header">
+								<h3>cache</h3>
+								<span class="extension-badge">Performance</span>
+							</div>
+							<p>HTTP caching with TTL control and cache key customization</p>
+							<div class="extension-footer">
+								<code>ec run --plugin cache</code>
+							</div>
+						</div>
+					</div>
+
+					<div class="browse-all">
+						<a href="https://github.com/tetrate/envoy-ecosystem" class="btn-secondary">
+							Browse All Extensions →
+						</a>
+					</div>
+				</div>
+			</section>
+
+			<section class="cli-features" id="docs">
+				<div class="container">
+					<h2>Complete CLI Toolkit</h2>
+
+					<div class="cli-grid">
+						<div class="cli-item">
+							<h4>Discover</h4>
+							<code>ec plugin list</code>
+							<p>Browse available extensions</p>
+						</div>
+
+						<div class="cli-item">
+							<h4>Run</h4>
+							<code>ec run --plugin name</code>
+							<p>Start Envoy with extensions</p>
+						</div>
+
+						<div class="cli-item">
+							<h4>Test Locally</h4>
+							<code>ec run --plugin ./path</code>
+							<p>Iterate on local extensions</p>
+						</div>
+
+						<div class="cli-item">
+							<h4>Generate Config</h4>
+							<code>ec gen --plugin name</code>
+							<p>Export Envoy configuration</p>
+						</div>
+
+						<div class="cli-item">
+							<h4>Scaffold</h4>
+							<code>ec create-plugin name</code>
+							<p>Create new extension template</p>
+						</div>
+
+						<div class="cli-item">
+							<h4>Publish</h4>
+							<code>ec plugin publish ./path</code>
+							<p>Share with the community</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="cta">
+				<div class="container">
+					<h2>Ready to extend Envoy?</h2>
+					<div class="cta-buttons">
+						<a href="https://github.com/tetrate/envoy-ecosystem" class="btn-primary">View on GitHub</a>
+						<a href="#" class="btn-secondary">Read the Docs</a>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer>
+			<div class="container">
+				<div class="footer-content">
+					<div class="footer-section">
+						<h4>Envoy Ecosystem</h4>
+						<p>Built by Tetrate</p>
+					</div>
+					<div class="footer-section">
+						<h4>Resources</h4>
+						<a href="https://github.com/tetrate/envoy-ecosystem">GitHub</a>
+						<a href="#">Documentation</a>
+						<a href="#">Contributing</a>
+					</div>
+					<div class="footer-section">
+						<h4>Community</h4>
+						<a href="https://www.envoyproxy.io/">Envoy Proxy</a>
+						<a href="https://www.tetrate.io/">Tetrate</a>
+						<a href="#">Slack</a>
+					</div>
+				</div>
+				<div class="footer-bottom">
+					<p>&copy; 2026 Tetrate. Envoy® is a registered trademark of the Linux Foundation.</p>
+				</div>
+			</div>
+		</footer>
+
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			:root {
+				--primary: #6500E0;
+				--primary-dark: #4A00A3;
+				--primary-light: #8B3FE8;
+				--accent: #00D9C9;
+				--text: #1a1a1a;
+				--text-muted: #666;
+				--bg: #ffffff;
+				--bg-alt: #f8f9fa;
+				--bg-code: #1e1e1e;
+				--border: #e0e0e0;
+				--success: #00C853;
+				--info: #2196F3;
+			}
+
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+				color: var(--text);
+				background: var(--bg);
+				line-height: 1.6;
+			}
+
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 24px;
+			}
+
+			/* Header */
+			header {
+				background: var(--bg);
+				border-bottom: 1px solid var(--border);
+				padding: 24px 0;
+				position: sticky;
+				top: 0;
+				z-index: 100;
+				backdrop-filter: blur(10px);
+				background: rgba(255, 255, 255, 0.95);
+			}
+
+			header .container {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.header-content {
+				display: flex;
+				align-items: baseline;
+				gap: 12px;
+			}
+
+			.logo {
+				font-size: 24px;
+				font-weight: 700;
+				color: var(--primary);
+			}
+
+			.subtitle {
+				color: var(--text-muted);
+				font-size: 14px;
+			}
+
+			nav {
+				display: flex;
+				gap: 32px;
+			}
+
+			nav a {
+				color: var(--text);
+				text-decoration: none;
+				font-weight: 500;
+				transition: color 0.2s;
+			}
+
+			nav a:hover {
+				color: var(--primary);
+			}
+
+			/* Hero */
+			.hero {
+				padding: 80px 0;
+				text-align: center;
+			}
+
+			.hero h2 {
+				font-size: 56px;
+				font-weight: 800;
+				margin-bottom: 24px;
+				color: var(--text);
+				line-height: 1.2;
+			}
+
+			.hero-subtitle {
+				font-size: 20px;
+				color: var(--text-muted);
+				max-width: 700px;
+				margin: 0 auto 60px;
+			}
+
+			.install-section {
+				max-width: 700px;
+				margin: 0 auto;
+			}
+
+			.install-section h3 {
+				font-size: 18px;
+				font-weight: 600;
+				margin-bottom: 16px;
+				color: var(--text);
+				text-align: left;
+			}
+
+			.code-block {
+				background: var(--bg-code);
+				color: #e0e0e0;
+				padding: 20px 24px;
+				border-radius: 12px;
+				font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+				font-size: 14px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 16px;
+				position: relative;
+			}
+
+			.code-block code {
+				flex: 1;
+			}
+
+			.copy-btn {
+				background: rgba(255, 255, 255, 0.1);
+				border: none;
+				color: #e0e0e0;
+				padding: 8px 12px;
+				border-radius: 6px;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+
+			.copy-btn:hover {
+				background: rgba(255, 255, 255, 0.2);
+			}
+
+			.install-note {
+				text-align: left;
+				color: var(--text-muted);
+				font-size: 14px;
+				margin-bottom: 12px;
+			}
+
+			/* Features */
+			.features {
+				padding: 80px 0;
+				background: var(--bg-alt);
+			}
+
+			.feature-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+				gap: 32px;
+			}
+
+			.feature-card {
+				background: var(--bg);
+				padding: 32px;
+				border-radius: 16px;
+				border: 1px solid var(--border);
+			}
+
+			.feature-icon {
+				font-size: 32px;
+				margin-bottom: 16px;
+				color: var(--primary);
+			}
+
+			.feature-card h3 {
+				font-size: 24px;
+				margin-bottom: 12px;
+				color: var(--text);
+			}
+
+			.feature-card > p {
+				color: var(--text-muted);
+				margin-bottom: 20px;
+			}
+
+			.code-example {
+				background: var(--bg-code);
+				color: #e0e0e0;
+				padding: 12px 16px;
+				border-radius: 8px;
+				font-family: 'Monaco', 'Menlo', monospace;
+				font-size: 13px;
+				margin-bottom: 12px;
+			}
+
+			.code-output {
+				background: var(--bg-alt);
+				padding: 12px 16px;
+				border-radius: 8px;
+				font-family: 'Monaco', 'Menlo', monospace;
+				font-size: 12px;
+				line-height: 1.8;
+				color: var(--text);
+			}
+
+			.output-success {
+				color: var(--success);
+			}
+
+			.output-info {
+				color: var(--info);
+			}
+
+			.output-link {
+				color: var(--primary);
+			}
+
+			.output-muted {
+				color: var(--text-muted);
+			}
+
+			/* Extensions */
+			.extensions {
+				padding: 80px 0;
+			}
+
+			.extensions h2 {
+				font-size: 40px;
+				text-align: center;
+				margin-bottom: 12px;
+			}
+
+			.section-subtitle {
+				text-align: center;
+				color: var(--text-muted);
+				margin-bottom: 48px;
+			}
+
+			.extensions-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 24px;
+				margin-bottom: 48px;
+			}
+
+			.extension-card {
+				background: var(--bg);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 24px;
+				transition: transform 0.2s, box-shadow 0.2s;
+			}
+
+			.extension-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 8px 24px rgba(101, 0, 224, 0.1);
+			}
+
+			.extension-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 12px;
+			}
+
+			.extension-card h3 {
+				font-size: 18px;
+				color: var(--text);
+				font-family: 'Monaco', 'Menlo', monospace;
+			}
+
+			.extension-badge {
+				background: var(--primary-light);
+				color: white;
+				font-size: 11px;
+				padding: 4px 8px;
+				border-radius: 4px;
+				font-weight: 600;
+				text-transform: uppercase;
+			}
+
+			.extension-card > p {
+				color: var(--text-muted);
+				font-size: 14px;
+				margin-bottom: 16px;
+				min-height: 40px;
+			}
+
+			.extension-footer code {
+				background: var(--bg-alt);
+				padding: 8px 12px;
+				border-radius: 6px;
+				font-size: 12px;
+				display: block;
+				color: var(--text);
+			}
+
+			.browse-all {
+				text-align: center;
+			}
+
+			/* CLI Features */
+			.cli-features {
+				padding: 80px 0;
+				background: var(--bg-alt);
+			}
+
+			.cli-features h2 {
+				font-size: 40px;
+				text-align: center;
+				margin-bottom: 48px;
+			}
+
+			.cli-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: 32px;
+			}
+
+			.cli-item {
+				text-align: center;
+			}
+
+			.cli-item h4 {
+				font-size: 18px;
+				margin-bottom: 12px;
+				color: var(--text);
+			}
+
+			.cli-item code {
+				background: var(--bg-code);
+				color: #e0e0e0;
+				padding: 10px 16px;
+				border-radius: 8px;
+				font-size: 13px;
+				display: inline-block;
+				margin-bottom: 8px;
+			}
+
+			.cli-item p {
+				color: var(--text-muted);
+				font-size: 14px;
+			}
+
+			/* CTA */
+			.cta {
+				padding: 80px 0;
+				text-align: center;
+			}
+
+			.cta h2 {
+				font-size: 40px;
+				margin-bottom: 32px;
+			}
+
+			.cta-buttons {
+				display: flex;
+				gap: 16px;
+				justify-content: center;
+			}
+
+			.btn-primary,
+			.btn-secondary {
+				padding: 16px 32px;
+				border-radius: 8px;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 16px;
+				transition: all 0.2s;
+				display: inline-block;
+			}
+
+			.btn-primary {
+				background: var(--primary);
+				color: white;
+			}
+
+			.btn-primary:hover {
+				background: var(--primary-dark);
+				transform: translateY(-2px);
+			}
+
+			.btn-secondary {
+				background: transparent;
+				color: var(--primary);
+				border: 2px solid var(--primary);
+			}
+
+			.btn-secondary:hover {
+				background: var(--primary);
+				color: white;
+			}
+
+			/* Footer */
+			footer {
+				background: var(--bg-code);
+				color: #e0e0e0;
+				padding: 48px 0 24px;
+			}
+
+			.footer-content {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 32px;
+				margin-bottom: 32px;
+			}
+
+			.footer-section h4 {
+				color: white;
+				margin-bottom: 12px;
+				font-size: 16px;
+			}
+
+			.footer-section p {
+				color: #999;
+				font-size: 14px;
+			}
+
+			.footer-section a {
+				color: #e0e0e0;
+				text-decoration: none;
+				display: block;
+				margin-bottom: 8px;
+				font-size: 14px;
+				transition: color 0.2s;
+			}
+
+			.footer-section a:hover {
+				color: var(--accent);
+			}
+
+			.footer-bottom {
+				border-top: 1px solid rgba(255, 255, 255, 0.1);
+				padding-top: 24px;
+				text-align: center;
+			}
+
+			.footer-bottom p {
+				color: #999;
+				font-size: 14px;
+			}
+
+			/* Responsive */
+			@media (max-width: 768px) {
+				.hero h2 {
+					font-size: 40px;
+				}
+
+				.hero-subtitle {
+					font-size: 18px;
+				}
+
+				.feature-grid,
+				.extensions-grid,
+				.cli-grid {
+					grid-template-columns: 1fr;
+				}
+
+				nav {
+					gap: 16px;
+				}
+
+				.cta-buttons {
+					flex-direction: column;
+					align-items: center;
+				}
+			}
+		</style>
+
+		<script>
+			// Copy button functionality
+			document.querySelectorAll('.copy-btn').forEach(btn => {
+				btn.addEventListener('click', async () => {
+					const codeBlock = btn.previousElementSibling;
+					if (codeBlock) {
+						await navigator.clipboard.writeText(codeBlock.textContent || '');
+						const originalHTML = btn.innerHTML;
+						btn.innerHTML = '✓';
+						setTimeout(() => {
+							btn.innerHTML = originalHTML;
+						}, 2000);
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
