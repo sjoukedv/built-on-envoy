@@ -44,7 +44,7 @@ This site is configured for deployment on Netlify. Simply connect your repositor
 
 ### Netlify Configuration
 
-The `netlify.toml` file is already configured with:
+The `../netlify.toml` file is already configured with:
 - Build command: `npm run build`
 - Publish directory: `dist`
 
@@ -112,8 +112,6 @@ The color scheme features:
 - Light backgrounds with purple/teal tints
 - Dark code blocks for contrast
 - Radial gradient overlays in hero sections
-
-For complete color documentation, see [COLOR_SCHEME.md](./COLOR_SCHEME.md)
 
 ## License
 
