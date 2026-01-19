@@ -9,6 +9,7 @@
 	--primary: #5b21b6;
 	--primary-dark: #4c1d95;
 	--primary-light: #7c3aed;
+	--primary-pink: rgb(192, 108, 201);
 	--primary-ultra-light: #e9d5ff;
 
 	/* Accent - Teal/cyan for CTAs and highlights */
@@ -99,8 +100,9 @@ header .container {
 }
 
 .subtitle {
-	color: var(--text-muted);
+	color: var(--primary-pink);
 	font-size: 15px;
+	font-weight: bold;
 	line-height: 1;
 }
 
@@ -110,14 +112,14 @@ nav {
 }
 
 nav a {
-	color: var(--text);
+	color: var(--primary-dark);
 	text-decoration: none;
-	font-weight: 500;
+	font-weight: 700;
 	transition: color 0.2s;
 }
 
 nav a:hover {
-	color: var(--primary);
+	color: var(--primary-light);
 }
 
 /* Hero */
@@ -212,6 +214,10 @@ nav a:hover {
 	margin-bottom: 16px;
 	color: var(--primary-dark);
 	text-align: left;
+}
+
+.install-section .code-block {
+	font-size: 17px;
 }
 
 .code-block {
@@ -449,8 +455,17 @@ nav a:hover {
 
 .cli-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-template-columns: repeat(4, 1fr);
 	gap: 32px;
+	justify-items: center;
+}
+
+.cli-grid .cli-item:nth-child(5) {
+	grid-column: 2;
+}
+
+.cli-grid .cli-item:nth-child(6) {
+	grid-column: 3;
 }
 
 .cli-item {
