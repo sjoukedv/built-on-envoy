@@ -14,7 +14,6 @@ tags:
   - security
   - jwks
   - oauth
-repository: https://github.com/tetratelabs/envoy-ecosystem
 license: Apache-2.0
 examples:
   - title: Basic JWT validation

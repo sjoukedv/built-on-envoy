@@ -18,6 +18,11 @@ import Footer from '../components/Footer.astro';
 		<meta name="generator" content={Astro.generator} />
 		<title>Envoy Ecosystem - Extensions Marketplace for Envoy Proxy</title>
 		<meta name="description" content="Discover, run, and build extensions for Envoy Proxy. A community-driven marketplace with zero-friction developer experience, powered by Tetrate" />
+		<style>
+			/* Critical CSS to prevent FOUC */
+			body { margin: 0; opacity: 0; }
+			body.loaded { opacity: 1; transition: opacity 0.2s ease-in; }
+		</style>
 	</head>
 	<body>
 		<Header />
@@ -33,6 +38,9 @@ import Footer from '../components/Footer.astro';
 		<Footer />
 
 		<script>
+			// Prevent FOUC
+			document.body.classList.add('loaded');
+
 			// Copy button functionality
 			document.querySelectorAll('.copy-btn').forEach(btn => {
 				btn.addEventListener('click', async () => {

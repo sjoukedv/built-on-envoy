@@ -1,5 +1,6 @@
 ---
 import '../styles/main.css';
+import '../styles/extensions.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ExtensionCard from '../components/ExtensionCard.astro';
@@ -39,24 +40,9 @@ const extensions: Extension[] = extensionFolders
 	.filter((ext): ext is Extension => ext !== null)
 	.sort((a, b) => a.name.localeCompare(b.name));
 
-// Group by category
-const extensionsByCategory = extensions.reduce((acc, ext) => {
-	if (!acc[ext.category]) {
-		acc[ext.category] = [];
-	}
-	acc[ext.category].push(ext);
-	return acc;
-}, {} as Record<string, Extension[]>);
-
-const categoryOrder = ['Popular', 'Security', 'Performance', 'Network', 'Observability', 'Transform'];
-const sortedCategories = Object.keys(extensionsByCategory).sort((a, b) => {
-	const aIndex = categoryOrder.indexOf(a);
-	const bIndex = categoryOrder.indexOf(b);
-	if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
-	if (aIndex === -1) return 1;
-	if (bIndex === -1) return -1;
-	return aIndex - bIndex;
-});
+// Collect unique categories from extensions and sort alphabetically
+const sortedCategories = [...new Set(extensions.map(ext => ext.category))]
+	.sort((a, b) => a.localeCompare(b));
 ---
 
 <!DOCTYPE html>
@@ -68,6 +54,11 @@ const sortedCategories = Object.keys(extensionsByCategory).sort((a, b) => {
 		<meta name="generator" content={Astro.generator} />
 		<title>Extension Catalog - Envoy Ecosystem</title>
 		<meta name="description" content="Browse all available extensions for Envoy Proxy in the Envoy Ecosystem marketplace" />
+		<style>
+			/* Critical CSS to prevent FOUC */
+			body { margin: 0; opacity: 0; }
+			body.loaded { opacity: 1; transition: opacity 0.2s ease-in; }
+		</style>
 	</head>
 	<body>
 		<Header />
@@ -131,6 +122,9 @@ const sortedCategories = Object.keys(extensionsByCategory).sort((a, b) => {
 		<Footer />
 
 		<script>
+			// Prevent FOUC
+			document.body.classList.add('loaded');
+
 			// Extension filtering functionality
 			const searchInput = document.getElementById('search-input') as HTMLInputElement;
 			const categoryFilter = document.getElementById('category-filter') as HTMLSelectElement;
@@ -181,145 +175,3 @@ const sortedCategories = Object.keys(extensionsByCategory).sort((a, b) => {
 	</body>
 </html>
 
-<style>
-	.page-hero {
-		background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
-		padding: 80px 0 60px;
-		border-bottom: 1px solid var(--border);
-	}
-
-	.page-hero h1 {
-		font-size: 48px;
-		font-weight: 700;
-		color: var(--primary-dark);
-		margin-bottom: 16px;
-		background: linear-gradient(135deg, var(--primary) 0%, var(--primary-pink) 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.hero-subtitle {
-		font-size: 20px;
-		color: var(--text-muted);
-		max-width: 600px;
-		margin-bottom: 32px;
-	}
-
-	.filters {
-		display: flex;
-		gap: 16px;
-		max-width: 800px;
-		margin: 0 auto;
-	}
-
-	.search-box {
-		flex: 1;
-	}
-
-	.search-box input {
-		width: 100%;
-		padding: 14px 20px;
-		border: 2px solid var(--border);
-		border-radius: 8px;
-		font-size: 16px;
-		font-family: inherit;
-		transition: all 0.2s;
-		background: var(--bg);
-		color: var(--text);
-	}
-
-	.search-box input:focus {
-		outline: none;
-		border-color: var(--primary);
-		box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-	}
-
-	.search-box input::placeholder {
-		color: var(--text-light);
-	}
-
-	.category-filter select {
-		padding: 14px 40px 14px 20px;
-		border: 2px solid var(--border);
-		border-radius: 8px;
-		font-size: 16px;
-		font-family: inherit;
-		background: var(--bg);
-		color: var(--text);
-		cursor: pointer;
-		transition: all 0.2s;
-		min-width: 180px;
-		appearance: none;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748b' d='M4.427 6.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 6H4.604a.25.25 0 00-.177.427z'/%3E%3C/svg%3E");
-		background-repeat: no-repeat;
-		background-position: right 12px center;
-	}
-
-	.category-filter select:focus {
-		outline: none;
-		border-color: var(--primary);
-		box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-	}
-
-	.category-filter select:hover {
-		border-color: var(--primary-light);
-	}
-
-	.extensions-catalog {
-		padding: 80px 0;
-	}
-
-	.category-section {
-		margin-bottom: 64px;
-	}
-
-	.category-section:last-child {
-		margin-bottom: 0;
-	}
-
-	.category-title {
-		font-size: 28px;
-		font-weight: 600;
-		color: var(--primary-dark);
-		margin-bottom: 24px;
-		padding-bottom: 12px;
-		border-bottom: 2px solid var(--border);
-	}
-
-	.empty-state {
-		text-align: center;
-		padding: 80px 24px;
-		color: var(--text-muted);
-	}
-
-	.extension-card-link {
-		text-decoration: none;
-		color: inherit;
-		display: block;
-	}
-
-	.extension-card-link:hover .extension-card {
-		transform: translateY(-4px);
-		box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15), 0 4px 12px rgba(6, 182, 212, 0.1);
-		border-color: var(--primary-light);
-	}
-
-	@media (max-width: 768px) {
-		.page-hero h1 {
-			font-size: 36px;
-		}
-
-		.hero-subtitle {
-			font-size: 18px;
-		}
-
-		.filters {
-			flex-direction: column;
-		}
-
-		.category-filter select {
-			width: 100%;
-		}
-	}
-</style>

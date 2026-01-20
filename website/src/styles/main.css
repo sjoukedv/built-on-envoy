@@ -668,4 +668,16 @@ footer {
 		flex-direction: column;
 		align-items: center;
 	}
+
+	.page-hero h1 {
+		font-size: 36px;
+	}
+
+	.filters {
+		flex-direction: column;
+	}
+
+	.category-filter select {
+		width: 100%;
+	}
 }
