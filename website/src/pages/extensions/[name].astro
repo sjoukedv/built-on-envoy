@@ -3,6 +3,7 @@ import '../../styles/main.css';
 import '../../styles/extension-detail.css';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { GITHUB_REPO, EXTENSIONS_PATH } from '../../constants';
 import { parse } from 'yaml';
 import fs from 'fs';
 import path from 'path';
@@ -156,6 +157,16 @@ const { extension } = Astro.props as { extension: Extension };
 							<div class="sidebar-section">
 								<h3>Resources</h3>
 								<ul class="resource-links">
+									<li>
+										<a href={`${GITHUB_REPO}/tree/main/${EXTENSIONS_PATH}/${extension.name}`} target="_blank" rel="noopener noreferrer">
+											View on GitHub →
+										</a>
+									</li>
+									<li>
+										<a href="/extensions">← Back to Catalog</a>
+									</li>
+								</ul>
+							</div>
 						</aside>
 					</div>
 				</div>

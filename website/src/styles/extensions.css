@@ -18,6 +18,11 @@
 	background-clip: text;
 }
 
+.page-hero .hero-subtitle {
+	margin: 0 0 32px 0;
+	text-align: left;
+}
+
 /* Search and Filter Controls */
 .filters {
 	display: flex;

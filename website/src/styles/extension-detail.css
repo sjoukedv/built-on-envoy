@@ -112,7 +112,7 @@
 .long-description p {
 	color: var(--text);
 	line-height: 1.8;
-	margin-bottom: 16px;
+	margin-bottom: 8px;
 }
 
 .long-description p:last-child {
