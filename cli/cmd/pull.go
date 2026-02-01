@@ -26,9 +26,9 @@ var (
 
 // Pull is a command to pull an extension from an OCI registry.
 type Pull struct {
-	Extension string `arg:"" help:"Extension name or OCI repository URL (e.g., cors or ghcr.io/tetratelabs/built-on-envoy/extension-cors:1.0.0)"`
+	Extension string `arg:"" help:"Extension name or OCI repository URL (e.g., cache or ${default_registry}/extension-cache:1.0.0)"`
 	Path      string `name:"path" help:"Destination path to extract the extension to." type:"path"`
-	Insecure  bool   `name:"insecure" help:"Allow pulling from an insecure (HTTP) registry (default: false)" default:"false"`
+	Insecure  bool   `name:"insecure" help:"Allow pulling from an insecure (HTTP) registry." default:"false"`
 	Username  string `name:"username" env:"BOE_REGISTRY_USERNAME" help:"Username for the OCI registry."`
 	Password  string `name:"password" env:"BOE_REGISTRY_PASSWORD" help:"Password for the OCI registry." type:"password"`
 
@@ -36,6 +36,17 @@ type Pull struct {
 	tag         string     `kong:"-"` // Internal field: parsed tag
 	client      oci.Client `kong:"-"` // Internal field: OCI client
 	downloadDir string     `kong:"-"` // Internal field: download directory
+}
+
+// Help provides detailed help for the pull command.
+func (p *Pull) Help() string {
+	return strings.ReplaceAll(`The pull command downloads an extension from an OCI-compliant container registry.
+You can specify either a simple extension name (which uses the default registry) or a full
+OCI reference including registry, repository, and tag.
+
+The extension is extracted to a local directory and can then be used with the {BT}run{BT} or
+{BT}gen-config{BT} commands via the {BT}--local{BT} flag. If no destination path is specified,
+the extension is saved to the default data directory.`, "{BT}", "`")
 }
 
 // Validate is called by Kong after parsing to validate the command arguments.

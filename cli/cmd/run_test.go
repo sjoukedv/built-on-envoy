@@ -37,26 +37,32 @@ func TestParseCmdRunHelp(t *testing.T) {
 
 	_, _ = parser.Parse([]string{"run", "--help"})
 
-	fmt.Println(buf.String())
-
 	expected := `Usage: boe run [flags]
 
 Run Envoy with extensions
+
+The run command starts an Envoy proxy with the specified extensions enabled.
+It automatically downloads the required Envoy binary if not already present,
+generates the necessary configuration, and launches Envoy with the extensions
+configured in the HTTP filter chain.
+
+You can enable multiple extensions using the ` + "`--extension`" + ` flag, and also load
+extensions from local directories using ` + "`--local`" + ` for development and testing
+purposes. The command manages all runtime files, logs, and the Envoy admin
+interface automatically.
 
 Flags:
   -h, --help                       Show context-sensitive help.
 
       --envoy-version=STRING       Envoy version to use (e.g., 1.31.0)
                                    ($ENVOY_VERSION)
-      --log-level="all:error"      Envoy component log level (default:
-                                   all:error)
+      --log-level="all:error"      Envoy component log level.
       --run-id=STRING              Run identifier for this invocation. Defaults
                                    to timestamp-based ID or $BOE_RUN_ID. Use '0'
                                    for Docker/Kubernetes ($BOE_RUN_ID).
       --listen-port=10000          Port for Envoy listener to accept incoming
-                                   traffic (default: 10000)
-      --admin-port=9901            Port for Envoy admin interface (default:
-                                   9901)
+                                   traffic.
+      --admin-port=9901            Port for Envoy admin interface.
       --extension=EXTENSION,...    Extensions to enable (in the format:
                                    "name:version").
       --local=LOCAL                Path to a directory containing a local

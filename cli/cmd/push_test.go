@@ -25,6 +25,7 @@ func TestParseCmdPushHelp(t *testing.T) {
 		kong.Name("boe"),
 		kong.Writers(&buf, &buf),
 		kong.Exit(func(int) {}),
+		Vars,
 	)
 	require.NoError(t, err)
 
@@ -34,6 +35,14 @@ func TestParseCmdPushHelp(t *testing.T) {
 
 Push an extension to an OCI registry
 
+The push command publishes a local extension to an OCI-compliant container
+registry. This allows you to share extensions with others or deploy them across
+different environments.
+
+The extension directory must contain a valid ` + "`manifest.yaml`" + ` file. The extension
+version from the manifest is used as the image tag. You can specify registry
+credentials via flags or environment variables for authenticated registries.
+
 Arguments:
   <local extension>    Path to a directory containing the extension to push.
 
@@ -41,10 +50,9 @@ Flags:
   -h, --help               Show context-sensitive help.
 
       --registry="ghcr.io/tetratelabs/built-on-envoy"
-                           OCI registry URL to push the extension to. (default:
-                           ghcr.io/tetratelabs/built-on-envoy) ($BOE_REGISTRY)
-      --insecure           Allow pushing to an insecure (HTTP) registry
-                           (default: false)
+                           OCI registry URL to push the extension to
+                           ($BOE_REGISTRY).
+      --insecure           Allow pushing to an insecure (HTTP) registry.
       --username=STRING    Username for the OCI registry
                            ($BOE_REGISTRY_USERNAME).
       --password=STRING    Password for the OCI registry

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	hcmv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/network/http_connection_manager/v3"
 
@@ -20,13 +21,24 @@ import (
 type GenConfig struct {
 	OnlyFilters bool `kong:"help='Generate configuration with only extension filters.'"`
 
-	ListenPort uint32   `help:"Port for Envoy listener to accept incoming traffic (default: 10000)" default:"10000"`
-	AdminPort  uint32   `help:"Port for Envoy admin interface (default: 9901)" default:"9901"`
+	ListenPort uint32   `help:"Port for Envoy listener to accept incoming traffic." default:"10000"`
+	AdminPort  uint32   `help:"Port for Envoy admin interface." default:"9901"`
 	Extensions []string `name:"extension" help:"Extensions to enable (by name)." sep:","`
 	Local      []string `name:"local" help:"Path to a directory containing a local Extension to enable." type:"existingdir" sep:","`
 
 	extensions []*extensions.Manifest `kong:"-"` // Internal field: loaded extension manifests
 	output     io.Writer              `kong:"-"` // Internal field for testing
+}
+
+// Help provides detailed help for the gen-config command.
+func (c *GenConfig) Help() string {
+	return strings.ReplaceAll(`The gen-config command generates Envoy configuration YAML for the specified extensions.
+This is useful for inspecting the generated configuration, integrating with existing Envoy deployments,
+or using with external Envoy management tools.
+
+By default, it outputs a complete Envoy bootstrap configuration. Use the {BT}--only-filters{BT} flag
+to generate just the HTTP filter chain configuration, which can be embedded into an existing
+{BT}HttpConnectionManager{BT} configuration.`, "{BT}", "`")
 }
 
 // Validate is called by Kong after parsing to validate the command arguments.

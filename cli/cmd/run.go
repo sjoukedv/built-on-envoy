@@ -28,16 +28,27 @@ const defaultLogLevel = "error"
 // Run is a command to run Envoy with extensions.
 type Run struct {
 	EnvoyVersion string   `help:"Envoy version to use (e.g., 1.31.0)" env:"ENVOY_VERSION"`
-	LogLevel     string   `help:"Envoy component log level (default: all:error)" default:"all:error"`
+	LogLevel     string   `help:"Envoy component log level." default:"all:error"`
 	RunID        string   `name:"run-id" env:"BOE_RUN_ID" help:"Run identifier for this invocation. Defaults to timestamp-based ID or $BOE_RUN_ID. Use '0' for Docker/Kubernetes."`
-	ListenPort   uint32   `help:"Port for Envoy listener to accept incoming traffic (default: 10000)" default:"10000"`
-	AdminPort    uint32   `help:"Port for Envoy admin interface (default: 9901)" default:"9901"`
+	ListenPort   uint32   `help:"Port for Envoy listener to accept incoming traffic." default:"10000"`
+	AdminPort    uint32   `help:"Port for Envoy admin interface." default:"9901"`
 	Extensions   []string `name:"extension" help:"Extensions to enable (in the format: \"name:version\")." sep:","`
 	Local        []string `name:"local" help:"Path to a directory containing a local Extension to enable." type:"existingdir" sep:","`
 
 	defaultLogLevel   string                 `kong:"-"` // Internal field: parsed defaut log level
 	componentLogLevel string                 `kong:"-"` // Internal field: parsed component log levels
 	extensions        []*extensions.Manifest `kong:"-"` // Internal field: loaded extension manifests
+}
+
+// Help provides detailed help for the run command.
+func (r *Run) Help() string {
+	return strings.ReplaceAll(`The run command starts an Envoy proxy with the specified extensions enabled.
+It automatically downloads the required Envoy binary if not already present, generates the necessary
+configuration, and launches Envoy with the extensions configured in the HTTP filter chain.
+
+You can enable multiple extensions using the {BT}--extension{BT} flag, and also load extensions from
+local directories using {BT}--local{BT} for development and testing purposes. The command manages
+all runtime files, logs, and the Envoy admin interface automatically.`, "{BT}", "`")
 }
 
 // BeforeApply is called by Kong before applying defaults to set computed default values.
