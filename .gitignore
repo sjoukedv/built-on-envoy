@@ -33,3 +33,10 @@ Thumbs.db
 
 # Compiled extensions
 *.so
+
+# Rust
+# Ignore Cargo build artifacts and lock in every subdirectory
+**/target/
+**/Cargo.lock
+**/*.dylib
+**/.rustc_info.json
