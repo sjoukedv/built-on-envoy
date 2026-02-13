@@ -1,9 +1,15 @@
-// Package main is the entry point for the standalone version of the {{ .Name }} extension.
+// Copyright Built On Envoy
+// SPDX-License-Identifier: Apache-2.0
+// The full text of the Apache license is available in the LICENSE file at
+// the root of the repo.
+
+// Package main is the entry point for the standalone version of the jwe-decrypt extension.
 package main
 
 import (
 	shared "github.com/envoyproxy/envoy/source/extensions/dynamic_modules/sdk/go/shared"
-	impl "{{ .Name }}"
+
+	impl "github.com/tetratelabs/built-on-envoy/extensions/composer/jwe-decrypt"
 )
 
 // WellKnownHttpFilterConfigFactories is the plugin entry point when running it as an
