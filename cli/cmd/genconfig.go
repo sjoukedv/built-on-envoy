@@ -66,11 +66,11 @@ func (g *GenConfig) Run(ctx context.Context, dirs *xdg.Directories) error {
 		Arch:     runtime.GOARCH,
 	}
 
-	downloaded, err := downloadExtensions(ctx, downloader, g.Extensions)
+	downloaded, err := downloadExtensions(ctx, downloader, g.Extensions, false)
 	if err != nil {
 		return err
 	}
-	local, err := loadLocalManifests(dirs, g.Local, false)
+	local, err := loadLocalManifests(ctx, downloader, g.Local, false)
 	if err != nil {
 		return err
 	}
