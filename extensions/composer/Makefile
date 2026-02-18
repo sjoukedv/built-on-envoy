@@ -126,7 +126,8 @@ build_image:
 		--provenance=false \
 		$(BASE_OCI_ANNOTATIONS) \
 		$(BINARY_ARTIFACT) \
-		-t $(IMAGE)-linux-$(ARCH) \
+		--build-arg BUILD_TAG=$(COMPOSER_BUILD_TAG) \
+		-t $(IMAGE)-$(OS)-$(ARCH) \
 		-f ./Dockerfile .
 
 # For default push operation, we will also prefer to build a multi-platform image to support
@@ -140,6 +141,7 @@ push_image: create_builder  ## Build and push docker image for the plugin for cr
 		--output type=registry,oci-mediatypes=true$(registry_output) \
 		--provenance=false \
 		$(MULTI_OCI_ANNOTATIONS) \
+		--build-arg BUILD_TAG=$(COMPOSER_BUILD_TAG) \
 		--tag $(IMAGE) \
 		-f ./Dockerfile .
 

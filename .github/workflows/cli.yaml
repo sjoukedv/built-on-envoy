@@ -116,10 +116,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - uses: docker/setup-buildx-action@v3
       - uses: actions/setup-go@v5
         with:
           go-version-file: cli/go.mod
           cache-dependency-path: cli/go.sum
+      - run: make build_image
       - run: make test-e2e
 
   lint:
