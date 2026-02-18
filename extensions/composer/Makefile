@@ -61,10 +61,8 @@ SOURCE := https://$(subst ghcr.io,github.com,$(HUB))
 # Option to build lite version of the loader.
 ifeq ($(strip $(COMPOSER_LITE)),true)
 	DESCRIPTION := Go plugin loader.
-	COMPOSER_BUILD_TAG := lite
+	COMPOSER_BUILD_TAG := -tags lite
 	IMAGE := $(HUB)/$(NAME)-lite:$(VERSION)$(IMAGE_NONCE)
-else
-	COMPOSER_BUILD_TAG := ""
 endif
 
 OS := linux
@@ -108,7 +106,7 @@ create_builder:
 
 .PHONY: build
 build:
-	CGO_ENABLED=1 go build -buildmode=c-shared -tags $(COMPOSER_BUILD_TAG) -o lib$(NAME).so ./main
+	CGO_ENABLED=1 go build -buildmode=c-shared $(COMPOSER_BUILD_TAG) -o lib$(NAME).so ./main
 
 .PHONY: install
 install: build
@@ -126,7 +124,7 @@ build_image:
 		--provenance=false \
 		$(BASE_OCI_ANNOTATIONS) \
 		$(BINARY_ARTIFACT) \
-		--build-arg BUILD_TAG=$(COMPOSER_BUILD_TAG) \
+		--build-arg BUILD_TAG="$(COMPOSER_BUILD_TAG)" \
 		-t $(IMAGE)-$(OS)-$(ARCH) \
 		-f ./Dockerfile .
 
@@ -141,7 +139,7 @@ push_image: create_builder  ## Build and push docker image for the plugin for cr
 		--output type=registry,oci-mediatypes=true$(registry_output) \
 		--provenance=false \
 		$(MULTI_OCI_ANNOTATIONS) \
-		--build-arg BUILD_TAG=$(COMPOSER_BUILD_TAG) \
+		--build-arg BUILD_TAG="$(COMPOSER_BUILD_TAG)" \
 		--tag $(IMAGE) \
 		-f ./Dockerfile .
 
