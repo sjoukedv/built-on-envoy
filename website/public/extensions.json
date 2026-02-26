@@ -1,7 +1,7 @@
 [
   {
     "name": "cedar-auth",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Security"
@@ -66,12 +66,12 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/cedar"
   },
   {
     "name": "coraza-waf",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Security"
@@ -99,12 +99,12 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/waf"
   },
   {
     "name": "example-go",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Examples"
@@ -127,7 +127,7 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/example"
   },
   {
@@ -214,7 +214,7 @@
   },
   {
     "name": "jwe-decrypt",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Security"
@@ -261,12 +261,12 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/jwe-decrypt"
   },
   {
     "name": "opa",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Security"
@@ -326,12 +326,12 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/opa"
   },
   {
     "name": "openapi-validator",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Security"
@@ -374,12 +374,12 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/openapi-validator"
   },
   {
     "name": "saml",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Security"
@@ -422,12 +422,12 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/saml"
   },
   {
     "name": "token-exchange",
-    "version": "0.2.2",
+    "version": "0.3.0-dev",
     "parent": "composer",
     "categories": [
       "Security"
@@ -454,7 +454,7 @@
       }
     ],
     "minEnvoyVersion": "1.37.0",
-    "composerVersion": "0.2.2",
+    "composerVersion": "0.3.0-dev",
     "sourcePath": "composer/token-exchange"
   }
 ]
