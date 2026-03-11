@@ -7,6 +7,7 @@
 [![Extensions](https://github.com/tetratelabs/built-on-envoy/actions/workflows/extensions.yaml/badge.svg)](https://github.com/tetratelabs/built-on-envoy/actions/workflows/extensions.yaml)
 [![Extensions Coverage](https://img.shields.io/codecov/c/github/tetratelabs/built-on-envoy?token=v4u6VpZSqZ&logo=codecov&logoColor=lightgray&flag=extensions&label=Extensions)](https://codecov.io/gh/tetratelabs/built-on-envoy)
 [![License](https://img.shields.io/badge/License-Apache%202.0-red)](LICENSE)
+[![Slack](https://img.shields.io/badge/Slack-Tetrate%20Community-purple)](https://join.slack.com/t/tetrate-community/shared_invite/zt-3rvq88b6s-siA~G2zGSF~sVoxwnl_krw)
 
 
 A community-driven marketplace for Envoy Proxy extensions. Discover, run, and build custom filters with zero friction.
@@ -24,6 +25,12 @@ A community-driven marketplace for Envoy Proxy extensions. Discover, run, and bu
 * [Extension Catalog](https://builtonenvoy.io/extensions/)
 * [CLI Reference](https://builtonenvoy.io/docs/cli/run)
 * [Security Considerations](https://builtonenvoy.io/docs/security-considerations)
+
+## Get In Touch
+
+* Share your feedback and ideas in [issues](https://github.com/tetratelabs/built-on-envoy/issues) or [discussions](https://github.com/tetratelabs/built-on-envoy/discussions).
+* Join the [Tetrate Community Slack](https://join.slack.com/t/tetrate-community/shared_invite/zt-3rvq88b6s-siA~G2zGSF~sVoxwnl_krw) if you're not already a member.
+Otherwise, use the [#built-on-envoy](https://tetrate-community.slack.com/archives/C0AG8GLT41E) channel to start collaborating with the community.
 
 ## Contributing Extensions
 
