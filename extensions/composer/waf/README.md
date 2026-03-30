@@ -9,8 +9,8 @@ The CRS rules are located under [coraza/rules/](coraza/rules/) and embedded into
 To upgrade to a new CRS version:
 
 1. Download the new CRS release minimal archive from the [coreruleset releases page](https://github.com/coreruleset/coreruleset/releases).
-2. Replace the contents of `coraza/rules/owasp_crs/` with the `.conf` and `.data` files from the new release `rules/` directory.
-3. Update `coraza/rules/crs-setup.conf` with the new `crs-setup.conf.example` available in the new release root folder, reviewing any changes and merging them into the existing `crs-setup.conf` as needed. Note that some configurations are specific for this repository, and this should not be overwritten.
+1. Replace the contents of `coraza/rules/owasp_crs/` with the `.conf` and `.data` files from the new release `rules/` directory.
+1. Update `coraza/rules/crs-setup.conf` with the new `crs-setup.conf.example` available in the new release root folder, reviewing any changes and merging them into the existing `crs-setup.conf` as needed. Note that some configurations are specific for this repository, and this should not be overwritten.
 
 Or as a one-liner:
 
@@ -25,6 +25,8 @@ mv "$TMP_DIR/coreruleset-$CRS_VERSION/crs-setup.conf.example" coraza/rules/crs-s
 rm -rf "$TMP_DIR"
 ```
 
+> [!NOTE]
+> Manual review is needed afterward. Some configurations in this code are specific to the tetratelabs/built-on-envoy repository and should not be overwritten when making updates or migrations. Please ensure that repository-specific settings are preserved during any refactoring or dependency updates.
 
 ## Upgrading Coraza
 
@@ -35,4 +37,4 @@ To upgrade to a new Coraza version:
    go get github.com/corazawaf/coraza/v3@<new-version>
    go mod tidy
    ```
-2. Update `coraza/rules/recommended.conf` with the new `recommended.conf.example` available in upstream repository at [coraza.conf-recommended](https://github.com/corazawaf/coraza/blob/main/coraza.conf-recommended) checking out the new version. Review any changes and merge them into the existing `recommended.conf` as needed. Note that some configurations are specific for this repository, and this should not be overwritten.
+1. Update `coraza/rules/recommended.conf` with the new `recommended.conf.example` available in upstream repository at [coraza.conf-recommended](https://github.com/corazawaf/coraza/blob/main/coraza.conf-recommended) checking out the new version. Review any changes and merge them into the existing `recommended.conf` as needed. Note that some configurations are specific for this repository, and this should not be overwritten.
