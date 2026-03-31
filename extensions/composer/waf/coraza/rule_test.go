@@ -18,42 +18,32 @@ func TestMapPath(t *testing.T) {
 	}{
 		{
 			input:      "@recommended.conf",
-			expected:   "rules/recommended.conf",
+			expected:   "rules/@coraza.conf",
 			expectedOK: true,
 		},
 		{
 			input:      "@recommended-conf",
-			expected:   "rules/recommended.conf",
+			expected:   "rules/@coraza.conf",
 			expectedOK: true,
 		},
 		{
 			input:      "@ftw.conf",
-			expected:   "rules/ftw.conf",
+			expected:   "rules/@ftw.conf",
 			expectedOK: true,
 		},
 		{
 			input:      "@ftw-conf",
-			expected:   "rules/ftw.conf",
+			expected:   "rules/@ftw.conf",
 			expectedOK: true,
 		},
 		{
 			input:      "@crs-setup.conf",
-			expected:   "rules/crs-setup.conf",
+			expected:   "rules/@crs-setup.conf",
 			expectedOK: true,
 		},
 		{
 			input:      "@crs-setup-conf",
-			expected:   "rules/crs-setup.conf",
-			expectedOK: true,
-		},
-		{
-			input:      "@owasp_crs/test.conf",
-			expected:   "rules/owasp_crs/test.conf",
-			expectedOK: true,
-		},
-		{
-			input:      "@owasp_crs/*.conf",
-			expected:   "rules/owasp_crs/*.conf",
+			expected:   "rules/@crs-setup.conf",
 			expectedOK: true,
 		},
 		{
@@ -78,18 +68,6 @@ func TestRulesFSOpen(t *testing.T) {
 	file, err = r.Open("unknown")
 	require.Error(t, err)
 	require.Nil(t, file)
-}
-
-func TestRulesFSReadDir(t *testing.T) {
-	r := rulesFS{}
-
-	entries, err := r.ReadDir("@owasp_crs")
-	require.NoError(t, err)
-	require.NotNil(t, entries)
-
-	entries, err = r.ReadDir("unknown")
-	require.Error(t, err)
-	require.Nil(t, entries)
 }
 
 func TestRulesFSReadFile(t *testing.T) {
