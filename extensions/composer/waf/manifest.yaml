@@ -153,7 +153,7 @@ examples:
       vector.
     code: |
       # Retrieve the file
-      curl https://raw.githubusercontent.com/coreruleset/wordpress-rule-exclusions-plugin/refs/heads/master/plugins/wordpress-rule-exclusions-before.conf -o /tmp/wordpress-plugin.conf
+      curl https://raw.githubusercontent.com/coreruleset/wordpress-rule-exclusions-plugin/refs/heads/master/plugins/wordpress-rule-exclusions-before.conf -o /tmp/wordpress-plugin-before.conf
       
       # Start WAF with recommended OWASP CRS rules, enforcement enabled, and loading the plugin file
       boe run --extension coraza-waf --config '
@@ -163,8 +163,8 @@ examples:
             "SecRuleEngine On",
             "SecResponseBodyAccess Off",
             "Include @crs-setup.conf",
-            "Include @owasp_crs/*.conf",
-            "Include /tmp/wordpress-plugin.conf"
+            "Include /tmp/wordpress-plugin-before.conf",
+            "Include @owasp_crs/*.conf"
           ]
         }'
 
