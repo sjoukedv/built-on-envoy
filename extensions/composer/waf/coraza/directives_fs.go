@@ -22,26 +22,25 @@ var customConfigsEmbed embed.FS
 // embeddedConfigs is the embedded directives directory wrapped with alias resolution.
 var embeddedConfigs directivesFS
 
-// CombinedDirectivesFS merges three filesystems in precedence order:
+// combinedDirectivesFS merges three filesystems with the following precedence order:
 //  1. Embedded directives — tailored configurations shipped with this extension
 //  2. coraza-coreruleset package — upstream unmodified OWASP CRS directives and configs
 //  3. Local filesystem — support for user-provided directive files
-var CombinedDirectivesFS fs.FS
+var combinedDirectivesFS fs.FS
 
 func init() {
 	// Strip the "directives/" prefix so embedded directive files are addressable
-	// e.g. as "@coraza.conf" rather than "directives/@coraza.conf".
+	// for example as "@coraza.conf" rather than "directives/@coraza.conf".
 	sub, err := fs.Sub(customConfigsEmbed, "directives")
 	if err != nil {
 		log.Fatal(err)
 	}
 	embeddedConfigs = directivesFS{sub}
-	CombinedDirectivesFS = mergefs.Merge(embeddedConfigs, coreruleset.FS, io.OSFS)
+	combinedDirectivesFS = mergefs.Merge(embeddedConfigs, coreruleset.FS, io.OSFS)
 }
 
 // directivesFS wraps the embedded directives directory, strips directory prefixes
-// that Coraza prepends on nested includes, and resolves aliases to their canonical
-// embedded file names.
+// that Coraza prepends on nested includes, and resolves aliases.
 type directivesFS struct {
 	subFS fs.FS
 }
@@ -71,6 +70,7 @@ func (d directivesFS) Glob(pattern string) ([]string, error) {
 // normalizeDirectivePath strips any directory prefix before '@' (Coraza prepends
 // the including file's directory when resolving nested Include directives) and
 // resolves aliases to their canonical embedded file names.
+// Aliases usage is discouraged, but kept for backward compatibility.
 func normalizeDirectivePath(name string) string {
 	if idx := strings.Index(name, "@"); idx != -1 {
 		name = name[idx:]

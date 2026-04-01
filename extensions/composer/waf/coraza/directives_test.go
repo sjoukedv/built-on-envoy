@@ -10,6 +10,9 @@ import (
 	"testing"
 
 	coreruleset "github.com/corazawaf/coraza-coreruleset/v4"
+	"github.com/corazawaf/coraza/v3"
+	"github.com/corazawaf/coraza/v3/experimental"
+	ctypes "github.com/corazawaf/coraza/v3/types"
 	"github.com/jcchavezs/mergefs/io"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -47,6 +50,7 @@ func TestEmbeddedDirectives(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "@coraza.conf"},
+		{name: "@recommended.conf"}, // alias
 		{name: "@crs-setup.conf"},
 		{name: "@ftw.conf"},
 		{name: "unknown", wantErr: true},
@@ -59,6 +63,7 @@ func TestEmbeddedDirectives(t *testing.T) {
 				} else {
 					require.NoError(t, err)
 					require.NotNil(t, file)
+					require.NoError(t, file.Close())
 				}
 			})
 			t.Run("ReadFile", func(t *testing.T) {
@@ -74,7 +79,7 @@ func TestEmbeddedDirectives(t *testing.T) {
 	}
 }
 
-// CombinedDirectivesFS order is embedded > coreruleset > local FS (OSFS)
+// combinedDirectivesFS order is embedded > coreruleset > local FS (OSFS)
 func TestCombinedDirectivesFS_ReadFile(t *testing.T) {
 	for _, tc := range []struct {
 		name   string
@@ -97,7 +102,7 @@ func TestCombinedDirectivesFS_ReadFile(t *testing.T) {
 		{name: "testdata/custom-rule-2.conf", source: io.OSFS},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			combined, err := fs.ReadFile(CombinedDirectivesFS, tc.name)
+			combined, err := fs.ReadFile(combinedDirectivesFS, tc.name)
 			require.NoError(t, err)
 
 			expected, err := fs.ReadFile(tc.source, tc.name)
@@ -115,9 +120,8 @@ func TestCombinedDirectivesFS_Glob(t *testing.T) {
 		mustNotContain []string
 	}{
 		{
-			// Embedded files are not discoverable via generic glob patterns
-			// They must be accessed explicitly by @-prefixed name.
-			// *.conf will match OSFS files.
+			// Embedded files are not discoverable via generic glob patterns —
+			// they must be accessed explicitly by @-prefixed name.
 			pattern: "*.conf",
 			mustNotContain: []string{
 				"@coraza.conf",
@@ -143,7 +147,7 @@ func TestCombinedDirectivesFS_Glob(t *testing.T) {
 		},
 	} {
 		t.Run(tc.pattern, func(t *testing.T) {
-			matches, err := fs.Glob(CombinedDirectivesFS, tc.pattern)
+			matches, err := fs.Glob(combinedDirectivesFS, tc.pattern)
 			require.NoError(t, err)
 			for _, m := range tc.mustContain {
 				require.Contains(t, matches, m)
@@ -155,13 +159,35 @@ func TestCombinedDirectivesFS_Glob(t *testing.T) {
 	}
 }
 
+// Verifies that testdata/include-coraza.conf (loaded from OSFS) can include
+// a special file name such as @coraza.conf (loaded from the embedded layer).
 func TestCombinedDirectivesFS_EmbeddedDirectivesInNestedInclude(t *testing.T) {
-	waf, err := NewWAFFromDirectives("SecRuleEngine On", zap.NewNop())
+	t.Run("baseline: ResponseBodyAccess is Off without @coraza.conf", func(t *testing.T) {
+		waf, err := NewWAFFromDirectives("SecRuleEngine On", zap.NewNop())
+		require.NoError(t, err)
+		require.False(t, waf.NewTransaction().IsResponseBodyAccessible())
+	})
+	t.Run("embedded @coraza.conf resolves from within a local file include", func(t *testing.T) {
+		waf, err := NewWAFFromDirectives("Include testdata/include-coraza.conf", zap.NewNop())
+		require.NoError(t, err)
+		require.True(t, waf.NewTransaction().IsResponseBodyAccessible())
+	})
+}
+
+// Verifies that via testdata/include-coraza.conf (loaded from OSFS) is possible to
+// include CRS rules (loaded from coreruleset FS)
+func TestCombinedDirectivesFS_CRSRulesLoaded(t *testing.T) {
+	var ruleIDs []int
+	cfg := coraza.NewWAFConfig().
+		WithErrorCallback(newSlogError(zap.NewNop())).
+		WithRootFS(combinedDirectivesFS)
+	cfg = experimental.WAFConfigWithRuleObserver(cfg, func(rule ctypes.RuleMetadata) {
+		ruleIDs = append(ruleIDs, rule.ID())
+	})
+	cfg = cfg.WithDirectives("Include testdata/include-coraza.conf")
+	_, err := coraza.NewWAF(cfg)
 	require.NoError(t, err)
-	require.False(t, waf.NewTransaction().IsResponseBodyAccessible(), "ResponseBodyAccess should be Off by default")
-	// testdata/include-coraza.conf contains "Include @coraza.conf".
-	// Despite being included from a local path, the embedded @coraza.conf should be correctly resolved and loaded by the WAF.
-	waf, err = NewWAFFromDirectives("Include testdata/include-coraza.conf", zap.NewNop())
-	require.NoError(t, err)
-	require.True(t, waf.NewTransaction().IsResponseBodyAccessible(), "ResponseBodyAccess should be enabled by @coraza.conf included via testdata/include-coraza.conf")
+	require.Contains(t, ruleIDs, 900990) // from @crs-setup.conf.example
+	require.Contains(t, ruleIDs, 949110) // from @owasp_crs/REQUEST-949-BLOCKING-EVALUATION.conf
+	require.Contains(t, ruleIDs, 959060) // from @owasp_crs/RESPONSE-959-BLOCKING-EVALUATION.conf
 }

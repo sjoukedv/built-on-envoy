@@ -10,7 +10,6 @@ The WAF resolves rule files from three layered filesystems (first match wins):
 2. **Coraza CoreRuleSet package** — upstream OWASP CRS rules.
 3. **Local filesystem** — support for user-provided overrides and custom rules.
 
-
 ## Upgrading CRS
 
 The CRS rules are provided by the [Coraza CoreRuleSet package](https://github.com/corazawaf/coraza-coreruleset). To upgrade:
