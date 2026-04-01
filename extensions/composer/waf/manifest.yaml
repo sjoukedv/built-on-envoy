@@ -130,3 +130,40 @@ examples:
       < server: envoy
       <
       Request blocked by WAF
+  - title: CRS plugin from local filesystem
+    description: |
+      The following example demonstrates how to load a CRS plugin from the local filesystem and run the WAF plugin
+      with recommended OWASP CRS rules.
+
+      It first downloads the WordPress rule exclusions plugin to a local file, enables blocking with
+      `SecRuleEngine On`, and includes the plugin using `Include /tmp/wordpress-plugin.conf`. The same SQL injection
+      payload that would normally be blocked is no longer blocked because the plugin excludes this specific attack
+      vector.
+    code: |
+      # Retrieve the file
+      curl https://raw.githubusercontent.com/coreruleset/wordpress-rule-exclusions-plugin/refs/heads/master/plugins/wordpress-rule-exclusions-before.conf -o /tmp/wordpress-plugin.conf
+      
+      # Start WAF with recommended OWASP CRS rules, enforcement enabled, and loading the plugin file
+      boe run --extension coraza-waf --config '
+        {
+          "directives": [
+            "Include @recommended.conf",
+            "SecRuleEngine On",
+            "SecResponseBodyAccess Off",
+            "Include @crs-setup.conf",
+            "Include @owasp_crs/*.conf",
+            "Include /tmp/wordpress-plugin.conf"
+          ]
+        }'
+
+      # Try sending a SQL injection payload and see the request rejected
+      curl -v "http://localhost:10000/wp-json/wp/v2/posts/1" -X POST -H "Content-Type: application/json" --data '{"content": "SELECT * FROM users WHERE id=1"}'
+  
+
+      # the request is no longer blocked by the WAF as the rules in the plugin file are excluding the specific attack vector from being detected
+      < HTTP/1.1 404 Not Found
+      < date: Wed, 01 Apr 2026 13:10:33 GMT
+      < content-type: text/html
+      < content-length: 233
+      < server: envoy
+      ...
