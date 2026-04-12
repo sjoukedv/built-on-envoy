@@ -9,7 +9,7 @@ The filter accepts a JSON configuration with the following fields:
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `directives` | `[]string` | *(required)* | List of Coraza SecLang directives. Each entry is a single directive string. Supports special includes such as `Include @coraza.conf`, `Include @crs-setup.conf`, `Include @owasp_crs/*.conf`. |
-| `mode` | `string` | `"REQUEST_ONLY"` | WAF inspection mode. `"REQUEST_ONLY"` processes only request phases (fast path, recommended for most deployments). `"FULL"` processes both request and response phases. `"RESPONSE_ONLY"` processes only response phases. |
+| `mode` | `string` | `"REQUEST_ONLY"` | WAF inspection mode. `"REQUEST_ONLY"` processes only request phases. `"FULL"` processes both request and response phases. `"RESPONSE_ONLY"` processes only response phases. |
 | `header_mode` | `string` | `"FULL"` | Controls which request headers are forwarded to Coraza. `"FULL"` forwards all request headers (preserves existing behaviour). `"MINIMAL"` forwards only a security-relevant subset (see below) to reduce per-request allocation and rule-variable population cost. |
 
 ### `header_mode: MINIMAL` header allowlist
