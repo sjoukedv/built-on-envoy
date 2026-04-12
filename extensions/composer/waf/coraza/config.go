@@ -28,20 +28,32 @@ const (
 	ModeResponseOnly
 )
 
+// HeaderMode controls which request headers are forwarded to Coraza.
+type HeaderMode int
+
+const (
+	// HeaderModeFull forwards all request headers to Coraza (default, preserves existing behaviour).
+	HeaderModeFull HeaderMode = iota
+	// HeaderModeMinimal forwards only a security-relevant subset of headers to Coraza,
+	// reducing per-request allocation and rule-variable population cost.
+	HeaderModeMinimal
+)
+
 // NewWAFConfigFromBytes creates a new WAF from the given raw configuration bytes passed at the
 // Envoy filter configuration. configBytes must be a valid json of WAFConfig.
 //
 // This returns a new WAF instance and a logger. The logger is guaranteed to be non-nil regardless
 // of the error state.
-func NewWAFConfigFromBytes(configBytes []byte, l *zap.Logger) (coraza.WAF, WAFMode, error) {
+func NewWAFConfigFromBytes(configBytes []byte, l *zap.Logger) (coraza.WAF, WAFMode, HeaderMode, error) {
 	var y struct {
 		// List of Coraza directive which will be joined with newlines. Use list here to
 		// simplify writing multi-line directives in JSON/YAML.
-		Directives []string `json:"directives"`
-		ModeString string   `json:"mode"`
+		Directives     []string `json:"directives"`
+		ModeString     string   `json:"mode"`
+		HeaderModeStr  string   `json:"header_mode"`
 	}
 	if err := json.Unmarshal(configBytes, &y); err != nil {
-		return nil, 0, fmt.Errorf("failed to unmarshal config: %w", err)
+		return nil, 0, 0, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
 	// Join directives with newlines
@@ -49,7 +61,7 @@ func NewWAFConfigFromBytes(configBytes []byte, l *zap.Logger) (coraza.WAF, WAFMo
 
 	waf, err := NewWAFFromDirectives(directives, l)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to create WAF from directives: %w", err)
+		return nil, 0, 0, fmt.Errorf("failed to create WAF from directives: %w", err)
 	}
 	var mode WAFMode
 	switch y.ModeString {
@@ -62,10 +74,20 @@ func NewWAFConfigFromBytes(configBytes []byte, l *zap.Logger) (coraza.WAF, WAFMo
 	case "":
 		mode = ModeRequestOnly
 	default:
-		return nil, 0, fmt.Errorf("invalid mode: %s", y.ModeString)
+		return nil, 0, 0, fmt.Errorf("invalid mode: %s", y.ModeString)
 	}
 
-	return waf, mode, nil
+	var headerMode HeaderMode
+	switch y.HeaderModeStr {
+	case "FULL", "":
+		headerMode = HeaderModeFull
+	case "MINIMAL":
+		headerMode = HeaderModeMinimal
+	default:
+		return nil, 0, 0, fmt.Errorf("invalid header_mode: %s", y.HeaderModeStr)
+	}
+
+	return waf, mode, headerMode, nil
 }
 
 // NewWAFFromDirectives creates a new WAF from the given directives.

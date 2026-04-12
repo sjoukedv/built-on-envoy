@@ -2,6 +2,37 @@
 
 This extension implements a Web Application Firewall using [OWASP Coraza](https://coraza.io/) and comes with rules from the [OWASP Core Rule Set (CRS)](https://coreruleset.org/) already embedded and ready to use.
 
+## Configuration
+
+The filter accepts a JSON configuration with the following fields:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `directives` | `[]string` | *(required)* | List of Coraza SecLang directives. Each entry is a single directive string. Supports special includes such as `Include @coraza.conf`, `Include @crs-setup.conf`, `Include @owasp_crs/*.conf`. |
+| `mode` | `string` | `"REQUEST_ONLY"` | WAF inspection mode. `"REQUEST_ONLY"` processes only request phases (fast path, recommended for most deployments). `"FULL"` processes both request and response phases. `"RESPONSE_ONLY"` processes only response phases. |
+| `header_mode` | `string` | `"FULL"` | Controls which request headers are forwarded to Coraza. `"FULL"` forwards all request headers (preserves existing behaviour). `"MINIMAL"` forwards only a security-relevant subset (see below) to reduce per-request allocation and rule-variable population cost. |
+
+### `header_mode: MINIMAL` header allowlist
+
+When `header_mode` is set to `"MINIMAL"`, only the following headers are forwarded to Coraza (in addition to `Host` which is always forwarded):
+
+- `user-agent`
+- `accept`
+- `content-type`
+- `content-length`
+- `cookie`
+- `authorization`
+- `referer`
+- `origin`
+- `x-forwarded-for`
+- `x-real-ip`
+
+All other headers are ignored by the WAF. This reduces per-request allocations and speeds up CRS rule evaluation. Use `"FULL"` if you require rules that inspect arbitrary custom headers.
+
+### GET/HEAD no-body fast path
+
+Requests with method `GET` or `HEAD`, or with an explicit `Content-Length: 0` header, skip body buffering entirely. Phase-2 rules (request body phase) are run immediately within the request-headers callback with an empty body, and the filter returns `Continue` without waiting for a body. This avoids the `HeadersStatusStop` / buffering overhead for the common no-body case.
+
 ## Rule Files
 
 The WAF resolves rule files from three layered filesystems (first match wins):

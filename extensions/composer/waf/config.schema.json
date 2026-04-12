@@ -20,6 +20,11 @@
       "type": "string",
       "description": "WAF inspection mode. Defaults to \"REQUEST_ONLY\" if not set.",
       "enum": ["REQUEST_ONLY", "RESPONSE_ONLY", "FULL"]
+    },
+    "header_mode": {
+      "type": "string",
+      "description": "Controls which request headers are forwarded to Coraza. \"FULL\" (default) forwards all headers. \"MINIMAL\" forwards only a security-relevant subset (User-Agent, Accept, Content-Type, Content-Length, Cookie, Authorization, Referer, Origin, X-Forwarded-For, X-Real-IP) to reduce per-request allocation cost.",
+      "enum": ["FULL", "MINIMAL"]
     }
   }
 }

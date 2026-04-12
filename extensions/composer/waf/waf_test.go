@@ -1117,6 +1117,7 @@ func Test_Phase2ArgsRuleWithSecRequestBodyAccessOff(t *testing.T) {
 			pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDSourceAddress).Return(pkg.UnsafeBufferFromString("10.0.0.1:12345"), true)
 
 			// ARGS rule fires regardless of SecRequestBodyAccess: both cases block.
+			// With the GET/HEAD fast path, phase 2 runs directly in OnRequestHeaders.
 			pluginHandle.EXPECT().IncrementCounterValue(
 				shared.MetricID(2), uint64(1), "example.com", strconv.Itoa(int(ctypes.PhaseRequestBody)), "100002",
 			).Return(shared.MetricsSuccess)
@@ -1132,10 +1133,15 @@ func Test_Phase2ArgsRuleWithSecRequestBodyAccessOff(t *testing.T) {
 				":method":    {"GET"},
 				":path":      {"/submit?payload=malicious-payload"},
 			})
-			require.Equal(t, shared.HeadersStatusStop, wafPlugin.OnRequestHeaders(fakeHeaderMap, false))
+			// GET requests use the no-body fast path: phase 2 runs within OnRequestHeaders.
+			// The block from the ARGS rule causes OnRequestHeaders to return HeadersStatusStop.
+			require.Equal(t, shared.HeadersStatusStop, wafPlugin.OnRequestHeaders(fakeHeaderMap, false),
+				"expected ARGS rule to fire in phase 2 via GET fast path and block in OnRequestHeaders")
 
+			// Since phase 2 already ran (requestBodyProcessed == true), a subsequent
+			// OnRequestBody call is a no-op and returns Continue.
 			bodyStatus := wafPlugin.OnRequestBody(fake.NewFakeBodyBuffer(nil), true)
-			require.Equal(t, shared.BodyStatusStopNoBuffer, bodyStatus, "expected ARGS rule to fire in phase 2 regardless of SecRequestBodyAccess")
+			assert.Equal(t, shared.BodyStatusContinue, bodyStatus, "expected body to be a no-op after GET fast-path phase 2")
 
 			wafPlugin.OnStreamComplete()
 		})
@@ -1625,4 +1631,216 @@ func Test_PerRouteConfigBlocksRequest(t *testing.T) {
 		"expected per-route WAF to block request")
 
 	wafPlugin.OnStreamComplete()
+}
+
+// Test_GetHeadFastPath verifies that GET and HEAD requests skip body buffering
+// and run phase-2 rules immediately within OnRequestHeaders.
+func Test_GetHeadFastPath(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	wafPluginFactory := newWAFFactory(t, ctrl, []string{
+		"Include @coraza.conf",
+		"Include @ftw.conf",
+		"Include @crs-setup.conf",
+		"Include @owasp_crs/*.conf",
+	}, "REQUEST_ONLY")
+
+	for _, method := range []string{"GET", "HEAD"} {
+		method := method
+		t.Run(method+" returns Continue without body buffering (endOfStream=false)", func(t *testing.T) {
+			pluginHandle := newPluginHandleWithoutPerRouteConfig(ctrl)
+			pluginHandle.EXPECT().IncrementCounterValue(shared.MetricID(1), uint64(1)).Return(shared.MetricsSuccess)
+			pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDRequestProtocol).Return(
+				pkg.UnsafeBufferFromString("HTTP/1.1"), true)
+			pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDSourceAddress).Return(
+				pkg.UnsafeBufferFromString("127.0.0.1:8080"), true)
+
+			plugin := wafPluginFactory.Create(pluginHandle)
+			wafPlugin, ok := plugin.(*wafPlugin)
+			require.True(t, ok)
+
+			fakeHeaders := fake.NewFakeHeaderMap(map[string][]string{
+				":authority":   {"example.com"},
+				":method":      {method},
+				":path":        {"/api/resource"},
+				"x-request-id": {"req-fast-path"},
+				"user-agent":   {"TestAgent/1.0"},
+				"accept":       {"application/json"},
+			})
+
+			// With the fast path, even endOfStream=false should return Continue for GET/HEAD.
+			headerStatus := wafPlugin.OnRequestHeaders(fakeHeaders, false)
+			assert.Equal(t, shared.HeadersStatusContinue, headerStatus,
+				"expected %s fast path to return Continue without buffering", method)
+
+			// Since phase 2 already ran, OnRequestBody is a no-op.
+			bodyStatus := wafPlugin.OnRequestBody(fake.NewFakeBodyBuffer(nil), true)
+			assert.Equal(t, shared.BodyStatusContinue, bodyStatus,
+				"expected body to be a no-op after %s fast-path phase 2", method)
+
+			wafPlugin.OnStreamComplete()
+		})
+	}
+
+	t.Run("POST with Content-Length: 0 also uses fast path", func(t *testing.T) {
+		pluginHandle := newPluginHandleWithoutPerRouteConfig(ctrl)
+		pluginHandle.EXPECT().IncrementCounterValue(shared.MetricID(1), uint64(1)).Return(shared.MetricsSuccess)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDRequestProtocol).Return(
+			pkg.UnsafeBufferFromString("HTTP/1.1"), true)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDSourceAddress).Return(
+			pkg.UnsafeBufferFromString("127.0.0.1:8080"), true)
+
+		plugin := wafPluginFactory.Create(pluginHandle)
+		wafPlugin, ok := plugin.(*wafPlugin)
+		require.True(t, ok)
+
+		fakeHeaders := fake.NewFakeHeaderMap(map[string][]string{
+			":authority":     {"example.com"},
+			":method":        {"POST"},
+			":path":          {"/api/empty"},
+			"content-length": {"0"},
+			"user-agent":     {"TestAgent/1.0"},
+		})
+
+		headerStatus := wafPlugin.OnRequestHeaders(fakeHeaders, false)
+		assert.Equal(t, shared.HeadersStatusContinue, headerStatus,
+			"expected POST with Content-Length:0 to use fast path and return Continue")
+
+		wafPlugin.OnStreamComplete()
+	})
+
+	t.Run("POST without Content-Length still buffers body", func(t *testing.T) {
+		pluginHandle := newPluginHandleWithoutPerRouteConfig(ctrl)
+		pluginHandle.EXPECT().IncrementCounterValue(shared.MetricID(1), uint64(1)).Return(shared.MetricsSuccess)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDRequestProtocol).Return(
+			pkg.UnsafeBufferFromString("HTTP/1.1"), true)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDSourceAddress).Return(
+			pkg.UnsafeBufferFromString("127.0.0.1:8080"), true)
+
+		plugin := wafPluginFactory.Create(pluginHandle)
+		wafPlugin, ok := plugin.(*wafPlugin)
+		require.True(t, ok)
+
+		fakeHeaders := fake.NewFakeHeaderMap(map[string][]string{
+			":authority":   {"example.com"},
+			":method":      {"POST"},
+			":path":        {"/api/submit"},
+			"content-type": {"application/json"},
+			"user-agent":   {"TestAgent/1.0"},
+		})
+
+		headerStatus := wafPlugin.OnRequestHeaders(fakeHeaders, false)
+		assert.Equal(t, shared.HeadersStatusStop, headerStatus,
+			"expected POST without Content-Length to buffer body")
+
+		// Body arrives and is processed.
+		bodyStatus := wafPlugin.OnRequestBody(fake.NewFakeBodyBuffer([]byte(`{"key":"value"}`)), true)
+		assert.Equal(t, shared.BodyStatusContinue, bodyStatus,
+			"expected body processing to succeed")
+
+		wafPlugin.OnStreamComplete()
+	})
+}
+
+// Test_MinimalHeaderMode verifies that header_mode MINIMAL only forwards
+// security-relevant headers to Coraza while blocking based on those headers.
+func Test_MinimalHeaderMode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	newMinimalFactory := func(t *testing.T, directives []string) shared.HttpFilterFactory {
+		t.Helper()
+		config := map[string]interface{}{
+			"directives":  directives,
+			"mode":        "REQUEST_ONLY",
+			"header_mode": "MINIMAL",
+		}
+		configBytes, err := json.Marshal(config)
+		require.NoError(t, err)
+
+		configHandle := mocks.NewMockHttpFilterConfigHandle(ctrl)
+		configHandle.EXPECT().DefineCounter("waf_tx_total").Return(shared.MetricID(1), shared.MetricsSuccess)
+		configHandle.EXPECT().DefineCounter("waf_tx_blocked", "authority", "phase", "rule_id").Return(shared.MetricID(2), shared.MetricsSuccess)
+
+		factory, err := (&wafPluginConfigFactory{}).Create(configHandle, configBytes)
+		require.NoError(t, err)
+		return factory
+	}
+
+	t.Run("MINIMAL mode blocks on allowlisted header (user-agent)", func(t *testing.T) {
+		wafPluginFactory := newMinimalFactory(t, []string{
+			"SecRuleEngine On",
+			`SecRule REQUEST_HEADERS:User-Agent "@contains badbot" "id:300001,phase:1,deny,status:403,msg:'Bad bot'"`,
+		})
+
+		pluginHandle := newPluginHandleWithoutPerRouteConfig(ctrl)
+		pluginHandle.EXPECT().IncrementCounterValue(shared.MetricID(1), uint64(1)).Return(shared.MetricsSuccess)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDRequestProtocol).Return(
+			pkg.UnsafeBufferFromString("HTTP/1.1"), true)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDSourceAddress).Return(
+			pkg.UnsafeBufferFromString("10.0.0.1:12345"), true)
+		pluginHandle.EXPECT().IncrementCounterValue(
+			shared.MetricID(2), uint64(1), "example.com",
+			strconv.Itoa(int(ctypes.PhaseRequestHeaders)), "300001",
+		).Return(shared.MetricsSuccess)
+		pluginHandle.EXPECT().SetMetadata("io.builtonenvoy.waf", metadataKeyBlockRule, 300001)
+		pluginHandle.EXPECT().SetMetadata("io.builtonenvoy.waf", metadataKeyBlockPhase, int(ctypes.PhaseRequestHeaders))
+		pluginHandle.EXPECT().SendLocalResponse(uint32(403), nil, []byte("Blocked by WAF"), "waf_request_headers_blocked")
+
+		plugin := wafPluginFactory.Create(pluginHandle)
+		wafPlugin, ok := plugin.(*wafPlugin)
+		require.True(t, ok)
+		assert.Equal(t, waf.HeaderModeMinimal, wafPlugin.headerMode,
+			"expected plugin to have MINIMAL header mode")
+
+		fakeHeaders := fake.NewFakeHeaderMap(map[string][]string{
+			":authority":   {"example.com"},
+			":method":      {"GET"},
+			":path":        {"/"},
+			"user-agent":   {"badbot/1.0"},
+			"x-custom":     {"should-be-ignored"},
+		})
+
+		status := wafPlugin.OnRequestHeaders(fakeHeaders, false)
+		assert.Equal(t, shared.HeadersStatusStop, status,
+			"expected MINIMAL mode to block on user-agent header")
+
+		wafPlugin.OnStreamComplete()
+	})
+
+	t.Run("MINIMAL mode passes clean request", func(t *testing.T) {
+		wafPluginFactory := newMinimalFactory(t, []string{
+			"Include @coraza.conf",
+			"Include @ftw.conf",
+			"Include @crs-setup.conf",
+			"Include @owasp_crs/*.conf",
+		})
+
+		pluginHandle := newPluginHandleWithoutPerRouteConfig(ctrl)
+		pluginHandle.EXPECT().IncrementCounterValue(shared.MetricID(1), uint64(1)).Return(shared.MetricsSuccess)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDRequestProtocol).Return(
+			pkg.UnsafeBufferFromString("HTTP/1.1"), true)
+		pluginHandle.EXPECT().GetAttributeString(shared.AttributeIDSourceAddress).Return(
+			pkg.UnsafeBufferFromString("127.0.0.1:8080"), true)
+
+		plugin := wafPluginFactory.Create(pluginHandle)
+		wafPlugin, ok := plugin.(*wafPlugin)
+		require.True(t, ok)
+
+		fakeHeaders := fake.NewFakeHeaderMap(map[string][]string{
+			":authority":   {"example.com"},
+			":method":      {"GET"},
+			":path":        {"/api/data"},
+			"user-agent":   {"Mozilla/5.0"},
+			"accept":       {"application/json"},
+			"x-custom":     {"value"},
+		})
+
+		status := wafPlugin.OnRequestHeaders(fakeHeaders, false)
+		assert.Equal(t, shared.HeadersStatusContinue, status,
+			"expected MINIMAL mode to pass clean request")
+
+		wafPlugin.OnStreamComplete()
+	})
 }

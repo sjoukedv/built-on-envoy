@@ -18,6 +18,19 @@ func TestConfigSchema(t *testing.T) {
 			"mode": "FULL"
 		}`)
 	})
+	t.Run("valid config with minimal header mode", func(t *testing.T) {
+		internaltesting.AssertSchemaValid(t, "config.schema.json", `{
+			"directives": ["SecRuleEngine On"],
+			"mode": "REQUEST_ONLY",
+			"header_mode": "MINIMAL"
+		}`)
+	})
+	t.Run("valid config with full header mode", func(t *testing.T) {
+		internaltesting.AssertSchemaValid(t, "config.schema.json", `{
+			"directives": ["SecRuleEngine On"],
+			"header_mode": "FULL"
+		}`)
+	})
 	t.Run("empty config", func(t *testing.T) {
 		internaltesting.AssertSchemaInvalid(t, "config.schema.json", `{}`)
 	})
@@ -35,6 +48,12 @@ func TestConfigSchema(t *testing.T) {
 		internaltesting.AssertSchemaInvalid(t, "config.schema.json", `{
 			"directives": ["SecRuleEngine On"],
 			"mode": "INVALID"
+		}`)
+	})
+	t.Run("invalid header_mode", func(t *testing.T) {
+		internaltesting.AssertSchemaInvalid(t, "config.schema.json", `{
+			"directives": ["SecRuleEngine On"],
+			"header_mode": "INVALID"
 		}`)
 	})
 }

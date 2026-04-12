@@ -9,7 +9,6 @@ package waf
 import (
 	"net"
 	"strconv"
-	"strings"
 
 	"github.com/corazawaf/coraza/v3"
 	ctypes "github.com/corazawaf/coraza/v3/types"
@@ -28,25 +27,29 @@ const (
 
 type wafPluginFactory struct {
 	shared.EmptyHttpFilterFactory
-	config  coraza.WAF
-	mode    waf.WAFMode
-	metrics *metrics
+	config     coraza.WAF
+	mode       waf.WAFMode
+	headerMode waf.HeaderMode
+	metrics    *metrics
 }
 
 type perRouteWafPluginConfig struct {
-	config coraza.WAF
-	mode   waf.WAFMode
+	config     coraza.WAF
+	mode       waf.WAFMode
+	headerMode waf.HeaderMode
 }
 
 func (f *wafPluginFactory) Create(handle shared.HttpFilterHandle) shared.HttpFilter {
 	config := f.config
 	mode := f.mode
+	headerMode := f.headerMode
 
 	// Check for per-route config and override if present.
 	perRouteWafPluginConfig := pkg.GetMostSpecificConfig[*perRouteWafPluginConfig](handle)
 	if perRouteWafPluginConfig != nil {
 		config = perRouteWafPluginConfig.config
 		mode = perRouteWafPluginConfig.mode
+		headerMode = perRouteWafPluginConfig.headerMode
 	}
 
 	if config == nil {
@@ -59,6 +62,7 @@ func (f *wafPluginFactory) Create(handle shared.HttpFilterHandle) shared.HttpFil
 		handle:            handle,
 		config:            config,
 		mode:              mode,
+		headerMode:        headerMode,
 		metrics:           f.metrics,
 		metadataNamespace: defaultMetadataNamespace,
 	}
@@ -74,10 +78,11 @@ func (f *wafPluginConfigFactory) Create(
 ) (shared.HttpFilterFactory, error) {
 	var wafConfig coraza.WAF
 	var mode waf.WAFMode
+	var headerMode waf.HeaderMode
 	var err error
 
 	if len(unparsedConfig) > 0 {
-		wafConfig, mode, err = waf.NewWAFConfigFromBytes(unparsedConfig, logger.GetLogger())
+		wafConfig, mode, headerMode, err = waf.NewWAFConfigFromBytes(unparsedConfig, logger.GetLogger())
 	}
 
 	if err != nil {
@@ -89,20 +94,22 @@ func (f *wafPluginConfigFactory) Create(
 	}
 
 	return &wafPluginFactory{
-		config:  wafConfig,
-		mode:    mode,
-		metrics: newMetrics(handle),
+		config:     wafConfig,
+		mode:       mode,
+		headerMode: headerMode,
+		metrics:    newMetrics(handle),
 	}, nil
 }
 
 func (f *wafPluginConfigFactory) CreatePerRoute(unparsedConfig []byte) (any, error) {
-	wafConfig, mode, err := waf.NewWAFConfigFromBytes(unparsedConfig, logger.GetLogger())
+	wafConfig, mode, headerMode, err := waf.NewWAFConfigFromBytes(unparsedConfig, logger.GetLogger())
 	if err != nil {
 		return nil, err
 	}
 	return &perRouteWafPluginConfig{
-		config: wafConfig,
-		mode:   mode,
+		config:     wafConfig,
+		mode:       mode,
+		headerMode: headerMode,
 	}, nil
 }
 
@@ -113,6 +120,7 @@ type wafPlugin struct {
 	handle            shared.HttpFilterHandle
 	config            coraza.WAF
 	mode              waf.WAFMode
+	headerMode        waf.HeaderMode
 	metrics           *metrics
 	metadataNamespace string
 
@@ -157,8 +165,46 @@ func (p *wafPlugin) getRequestProtocol() string {
 	return protocol
 }
 
-func getServerName(host string) string {
-	return strings.Clone(host)
+// minimalRequestHeaders is the set of security-relevant headers forwarded to Coraza
+// when header_mode is MINIMAL. Host is always forwarded separately.
+var minimalRequestHeaders = []string{
+	"user-agent",
+	"accept",
+	"content-type",
+	"content-length",
+	"cookie",
+	"authorization",
+	"referer",
+	"origin",
+	"x-forwarded-for",
+	"x-real-ip",
+}
+
+// containsIgnoreASCII reports whether substr appears in s using ASCII case-insensitive
+// comparison. It does not allocate.
+func containsIgnoreASCII(s, substr string) bool {
+	if len(substr) == 0 {
+		return true
+	}
+	if len(s) < len(substr) {
+		return false
+	}
+outer:
+	for i := 0; i <= len(s)-len(substr); i++ {
+		for j := 0; j < len(substr); j++ {
+			sc := s[i+j]
+			tc := substr[j]
+			if sc == tc {
+				continue
+			}
+			// Fold ASCII letters to lowercase and compare.
+			if sc|0x20 != tc|0x20 || sc|0x20 < 'a' || sc|0x20 > 'z' {
+				continue outer
+			}
+		}
+		return true
+	}
+	return false
 }
 
 func (p *wafPlugin) mayInitializeTransaction(headers shared.HeaderMap) {
@@ -173,13 +219,21 @@ func (p *wafPlugin) mayInitializeTransaction(headers shared.HeaderMap) {
 func (p *wafPlugin) checkUpgrade(headers shared.HeaderMap) bool {
 	connectionHeader := headers.GetOne("connection").ToUnsafeString()
 	upgrade := headers.GetOne("upgrade").ToUnsafeString()
-	return strings.Contains(strings.ToLower(connectionHeader), "upgrade") &&
-		upgrade != ""
+	return containsIgnoreASCII(connectionHeader, "upgrade") && upgrade != ""
 }
 
 func (p *wafPlugin) checkSSE(headers shared.HeaderMap) bool {
-	return strings.Contains(strings.ToLower(headers.GetOne("content-type").ToUnsafeString()),
-		"text/event-stream")
+	return containsIgnoreASCII(headers.GetOne("content-type").ToUnsafeString(), "text/event-stream")
+}
+
+// noBodyExpected returns true when the request is guaranteed to carry no body,
+// allowing the request-body phase to be run immediately without buffering.
+func noBodyExpected(method string, headers shared.HeaderMap) bool {
+	if method == "GET" || method == "HEAD" {
+		return true
+	}
+	cl := headers.GetOne("content-length").ToUnsafeString()
+	return cl == "0"
 }
 
 func (p *wafPlugin) OnRequestHeaders(headers shared.HeaderMap, endOfStream bool) shared.HeadersStatus {
@@ -211,10 +265,18 @@ func (p *wafPlugin) OnRequestHeaders(headers shared.HeaderMap, endOfStream bool)
 
 	// CRS rules tend to expect Host even with HTTP/2
 	p.txContext.AddRequestHeader("Host", host)
-	p.txContext.SetServerName(getServerName(host))
-	headerMap := headers.GetAll()
-	for _, header := range headerMap {
-		p.txContext.AddRequestHeader(header[0].ToString(), header[1].ToString())
+	p.txContext.SetServerName(host)
+	if p.headerMode == waf.HeaderModeMinimal {
+		for _, name := range minimalRequestHeaders {
+			if v := headers.GetOne(name).ToString(); v != "" {
+				p.txContext.AddRequestHeader(name, v)
+			}
+		}
+	} else {
+		headerMap := headers.GetAll()
+		for _, header := range headerMap {
+			p.txContext.AddRequestHeader(header[0].ToString(), header[1].ToString())
+		}
 	}
 
 	p.txContext.ProcessConnection(srcIP, srcPort, dstIP, dstPort)
@@ -225,9 +287,10 @@ func (p *wafPlugin) OnRequestHeaders(headers shared.HeaderMap, endOfStream bool)
 		return shared.HeadersStatusStop
 	}
 
-	// If endOfStream is true or if we won't buffer the body (upgrade), call handleRequestBody to run phase 2 rules.
-	// This allows rules in the request body phase to run, even if there is no actual body to process and before sending the headers.
-	if endOfStream || p.isUpgrade {
+	// If endOfStream is true, if we won't buffer the body (upgrade), or if no body is
+	// expected (GET/HEAD or Content-Length: 0), run phase-2 rules immediately with an
+	// empty body. This avoids HeadersStatusStop for the common no-body case.
+	if endOfStream || p.isUpgrade || noBodyExpected(method, headers) {
 		if !p.handleRequestBody() {
 			return shared.HeadersStatusStop
 		}
