@@ -7,6 +7,7 @@
 package waf
 
 import (
+	"io"
 	"net"
 	"strconv"
 	"strings"
@@ -36,6 +37,24 @@ type wafPluginFactory struct {
 type perRouteWafPluginConfig struct {
 	config coraza.WAF
 	mode   waf.WAFMode
+}
+
+// OnDestroy releases resources held by the main WAF instance when this factory is destroyed.
+// It is called by Envoy once all streams using this factory are closed (e.g. after a config reload).
+//
+// Per-route WAF instances are intentionally NOT closed here: their lifetime is managed
+// independently by Envoy's route configuration and may outlive any particular filter factory.
+// Closing them here would race with in-flight requests on the new factory that still hold a
+// reference to the same per-route WAF object.
+func (f *wafPluginFactory) OnDestroy() {
+	if f.config == nil {
+		return
+	}
+	if c, ok := f.config.(io.Closer); ok {
+		if err := c.Close(); err != nil {
+			logger.GetLogger().Sugar().Errorf("waf: error closing WAF instance: %v", err)
+		}
+	}
 }
 
 func (f *wafPluginFactory) Create(handle shared.HttpFilterHandle) shared.HttpFilter {
