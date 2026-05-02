@@ -1967,6 +1967,8 @@ func Test_OnDestroyReleasesMemory(t *testing.T) {
 
 	const maxGrowthKB = uint64(1024)
 	after := heapAlloc()
+	// Use max to guard against uint64 underflow: GC may reclaim more than was allocated
+	// (e.g. other goroutines finishing), so after can legitimately be below baseline.
 	heapGrowthKB := (max(after, baseline) - baseline) / 1024
 
 	// Without OnDestroy releasing memoized caches: 30 reloads × 50 unique regexes leaks ~5+ MB.
